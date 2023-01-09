@@ -47,6 +47,9 @@ dependencies:
   carousel_slider: ^4.0.0
   bloc: ^7.2.0
   equatable: ^1.0.2
+  google_maps_flutter: ^2.2.3
+  geolocator: ^9.0.2
+  geocoding: ^2.0.5
 
 dev_dependencies:
   flutter_test:
