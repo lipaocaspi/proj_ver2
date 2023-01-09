@@ -1,4 +1,4 @@
-# Proyecto de Grado - Versión 1
+# Proyecto de Grado - Versión 2
 
 ## Información
 
