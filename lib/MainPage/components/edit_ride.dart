@@ -2,13 +2,20 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proj_ver1/constants.dart';
+import 'package:proj_ver1/variables.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
+import 'package:proj_ver1/data/repository/models/user_model.dart';
+import 'package:proj_ver1/MainPage/components/edit_ride_map_e.dart';
+import 'package:proj_ver1/MainPage/components/edit_ride_map_s.dart';
 
 class EditRidePage extends StatefulWidget {
-  EditRidePage(this.ride, {Key? key}) : super(key: key);
+  EditRidePage(this.ride, {Key? key, required this.users}) : super(key: key);
   final Ride ride;
+  final Users users;
 
   @override
   EditRidePageState createState() => EditRidePageState();
@@ -24,6 +31,15 @@ class EditRidePageState extends State<EditRidePage> {
   final TextEditingController _controllerPrice = TextEditingController();
   final vehicle = ["Automóvil", "Motocicleta"];
   final _keyForm = GlobalKey<FormState>();
+
+  Future<Position> getUserCurrentLocation() async {
+    await Geolocator.requestPermission().then((value){
+    }).onError((error, stackTrace) async {
+      await Geolocator.requestPermission();
+      print("ERROR"+error.toString());
+    });
+    return await Geolocator.getCurrentPosition();
+  }
 
   String? value1;
   DropdownMenuItem<String> buildMenuVehicle(String vehicle) => DropdownMenuItem(
@@ -110,13 +126,8 @@ class EditRidePageState extends State<EditRidePage> {
                             child: Icon(Icons.room),
                           )
                         ),
-                        textInputAction: TextInputAction.next,
+                        enabled: false,
                         validator: ValidationBuilder().build(),
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            widget.ride.start = _controllerStart.text;
-                          });
-                        },
                       ),
                     )
                   ),
@@ -126,7 +137,22 @@ class EditRidePageState extends State<EditRidePage> {
                       padding: EdgeInsets.all(5),
                       child: ElevatedButton(
                         child: Icon(Icons.map),
-                        onPressed: () {},
+                        onPressed: () async {
+                          getUserCurrentLocation().then(
+                            (value) async {
+                              final location = await
+                              Navigator.of(context).push(
+                                PageTransition(
+                                  child: EditRideMapS(value: value, ride: widget.ride),
+                                  type: PageTransitionType.fade,
+                                ),
+                              );
+                              setState(() {
+                                widget.ride.start = location;
+                              });
+                            }
+                          );
+                        },
                       )
                     )
                   )
@@ -147,13 +173,8 @@ class EditRidePageState extends State<EditRidePage> {
                             child: Icon(Icons.room),
                           )
                         ),
-                        textInputAction: TextInputAction.next,
+                        enabled: false,
                         validator: ValidationBuilder().build(),
-                        onFieldSubmitted: (value) {
-                          setState(() {
-                            widget.ride.end = _controllerEnd.text;
-                          });
-                        },
                       ),
                     )
                   ),
@@ -163,7 +184,22 @@ class EditRidePageState extends State<EditRidePage> {
                       padding: EdgeInsets.all(5),
                       child: ElevatedButton(
                         child: Icon(Icons.map),
-                        onPressed: () {},
+                        onPressed: () {
+                          getUserCurrentLocation().then(
+                            (value) async {
+                              final location = await
+                              Navigator.of(context).push(
+                                PageTransition(
+                                  child: EditRideMapE(value: value, ride: widget.ride),
+                                  type: PageTransitionType.fade,
+                                ),
+                              );
+                              setState(() {
+                                widget.ride.end = location;
+                              });
+                            }
+                          );
+                        },
                       )
                     )
                   )
@@ -301,13 +337,17 @@ class EditRidePageState extends State<EditRidePage> {
   }
 
   updateRide(id) async {
-    http.put(Uri.parse("http://192.168.1.37:3000/rides/$id"),
+    final response = await http.put(Uri.parse("http://10.8.80.126:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
         "userId": widget.ride.userId,
         "start": widget.ride.start,
+        "latS": latS,
+        "lonS":  lonS,
         "end": widget.ride.end,
+        "latE": latE,
+        "lonE": lonE,
         "dateAndTime": widget.ride.dateAndTime,
         "vehicle": widget.ride.vehicle,
         "room": widget.ride.room,
@@ -317,5 +357,11 @@ class EditRidePageState extends State<EditRidePage> {
         "state": widget.ride.state
       })
     );
+    if(response.statusCode == 200) {
+      setState(() {
+        start = "";
+        end = "";
+      });
+    }
   }
 }
