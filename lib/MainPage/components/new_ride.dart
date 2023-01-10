@@ -2,12 +2,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proj_ver1/constants.dart';
+import 'package:proj_ver1/variables.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
+import 'package:proj_ver1/MainPage/components/new_ride_map_e.dart';
+import 'package:proj_ver1/MainPage/components/new_ride_map_s.dart';
 
 class NewRidePage extends StatefulWidget {
-  const NewRidePage({Key? key, required this.users}) : super(key: key);
+  NewRidePage({Key? key, required this.users}) : super(key: key);
   final Users users;
 
   @override
@@ -26,6 +31,15 @@ class NewRidePageState extends State<NewRidePage> {
   final formKey = GlobalKey<FormState>();
   late Ride newRide;
 
+  Future<Position> getUserCurrentLocation() async {
+    await Geolocator.requestPermission().then((value){
+    }).onError((error, stackTrace) async {
+      await Geolocator.requestPermission();
+      print("ERROR"+error.toString());
+    });
+    return await Geolocator.getCurrentPosition();
+  }
+
   String? value1;
   DropdownMenuItem<String> buildMenuVehicle(String vehicle) => DropdownMenuItem(
     value: vehicle,
@@ -43,17 +57,21 @@ class NewRidePageState extends State<NewRidePage> {
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
+            setState(() {
+              start = '';
+              end = '';
+            });
             Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.check),
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 postRide();
               }
             },
-            icon: Icon(Icons.check)
           )
         ],
       ),
@@ -70,7 +88,7 @@ class NewRidePageState extends State<NewRidePage> {
                     child: Padding(
                       padding: EdgeInsets.all(5),
                       child: TextFormField(
-                        controller: _controllerStart,
+                        controller: _controllerStart..text = start,
                         decoration: const InputDecoration(
                           hintText: "Origen",
                           prefixIcon: Padding(
@@ -78,7 +96,7 @@ class NewRidePageState extends State<NewRidePage> {
                             child: Icon(Icons.room),
                           )
                         ),
-                        textInputAction: TextInputAction.next,
+                        enabled: false,
                         validator: ValidationBuilder().build(),
                       ),
                     )
@@ -89,7 +107,22 @@ class NewRidePageState extends State<NewRidePage> {
                       padding: EdgeInsets.all(5),
                       child: ElevatedButton(
                         child: Icon(Icons.map),
-                        onPressed: () {},
+                        onPressed: () async {
+                          getUserCurrentLocation().then(
+                            (value) async {
+                              final location = await
+                              Navigator.of(context).push(
+                                PageTransition(
+                                  child: NewRideMapS(value: value, users: widget.users),
+                                  type: PageTransitionType.fade,
+                                ),
+                              );
+                              setState(() {
+                                start = location;
+                              });
+                            }
+                          );
+                        },
                       )
                     )
                   )
@@ -103,7 +136,7 @@ class NewRidePageState extends State<NewRidePage> {
                     child: Padding(
                       padding: EdgeInsets.all(5),
                       child: TextFormField(
-                        controller: _controllerEnd,
+                        controller: _controllerEnd..text = end,
                         decoration: const InputDecoration(
                           hintText: "Destino",
                           prefixIcon: Padding(
@@ -111,6 +144,7 @@ class NewRidePageState extends State<NewRidePage> {
                             child: Icon(Icons.room),
                           )
                         ),
+                        enabled: false,
                         textInputAction: TextInputAction.next,
                         validator: ValidationBuilder().build(),
                       ),
@@ -122,9 +156,24 @@ class NewRidePageState extends State<NewRidePage> {
                       padding: EdgeInsets.all(5),
                       child: ElevatedButton(
                         child: Icon(Icons.map),
-                        onPressed: () {},
+                        onPressed: () async {
+                          getUserCurrentLocation().then(
+                            (value) async {
+                              final location = await
+                              Navigator.of(context).push(
+                                PageTransition(
+                                  child: NewRideMapE(value: value, users: widget.users),
+                                  type: PageTransitionType.fade,
+                                ),
+                              );
+                              setState(() {
+                                end = location;
+                              });
+                            }
+                          );
+                        },
                       )
-                    )
+                    ), 
                   )
                 ],
               ),
@@ -234,7 +283,11 @@ class NewRidePageState extends State<NewRidePage> {
       id: 20,
       userId: widget.users.id,
       start: _controllerStart.text,
+      latS: latS,
+      lonS: lonS,
       end: _controllerEnd.text,
+      latE: latE,
+      lonE: lonE,
       dateAndTime: _controllerDate.text,
       vehicle: value1!,
       room: _controllerRoom.text,
@@ -243,13 +296,17 @@ class NewRidePageState extends State<NewRidePage> {
       price: _controllerPrice.text,
       state: false,
     );
-    final response = await http.post(Uri.parse("http://192.168.1.37:3000/rides"),
+    final response = await http.post(Uri.parse("http://10.8.80.126:3000/rides"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": newRide.id,
         "userId": newRide.userId,
         "start": newRide.start,
+        "latS": newRide.latS,
+        "lonS": newRide.lonS,
         "end": newRide.end,
+        "latE": newRide.latE,
+        "lonE": newRide.lonE,
         "dateAndTime": newRide.dateAndTime,
         "vehicle": newRide.vehicle,
         "room": newRide.room,
@@ -272,5 +329,9 @@ class NewRidePageState extends State<NewRidePage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(successSnack);
     }
+    setState(() {
+      start = "";
+      end = "";
+    });
   }
 }
