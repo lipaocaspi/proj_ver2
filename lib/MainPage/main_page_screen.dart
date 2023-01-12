@@ -43,7 +43,7 @@ class MainPageState extends State<MainPage> {
   loadRides() async {
     widget._rides.clear();
     widget._ridesU.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.37:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.1.38:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -68,7 +68,7 @@ class MainPageState extends State<MainPage> {
   loadFilter() async {
     widget._rides.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.37:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
+        await http.get(Uri.parse("http://192.168.1.38:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -182,7 +182,7 @@ class MainPageState extends State<MainPage> {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     PageTransition(
-                      child: UserRidesPage(widget.users.id, widget._ridesU),
+                      child: UserRidesPage(widget.users.id, widget._ridesU, widget.users),
                       type: PageTransitionType.rightToLeft,
                     ),
                   );
@@ -379,29 +379,47 @@ class MainPageState extends State<MainPage> {
                                       );
                                     }),
                                     child: SizedBox(
-                                      height: 100,
+                                      height: 120,
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
-                                          Icon(widget._rides[index].vehicle == 'Motocicleta' ? Icons.motorcycle : Icons.drive_eta),
+                                          Icon(widget._rides[index].vehicle == 'Motocicleta' ? Icons.motorcycle : Icons.drive_eta, size: 25),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                "Origen: ",
-                                                style: TextStyle(fontWeight: FontWeight.bold)
+                                              Expanded(
+                                                child: Text(
+                                                  "Origen: ",
+                                                  style: TextStyle(fontWeight: FontWeight.bold)
+                                                ),
                                               ),
-                                              Text(widget._rides[index].start)
+                                              Expanded(
+                                                flex: 5,
+                                                child: Text(
+                                                  widget._rides[index].start,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 2,
+                                                )
+                                              ),
                                             ],
                                           ),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                "Destino: ",
-                                                style: TextStyle(fontWeight: FontWeight.bold)
+                                              Expanded(
+                                                child: Text(
+                                                  "Destino: ",
+                                                  style: TextStyle(fontWeight: FontWeight.bold)
+                                                ),
                                               ),
-                                              Text(widget._rides[index].end)
+                                              Expanded(
+                                                flex: 4,
+                                                child: Text(
+                                                  widget._rides[index].end,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 2,
+                                                )
+                                              ),
                                             ],
                                           ),
                                           space,
