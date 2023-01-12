@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proj_ver1/MainPage/components/edit_ride.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
+import 'package:proj_ver1/data/repository/models/user_model.dart';
 
 class UserRidesPage extends StatefulWidget {
-  UserRidesPage(this.id, this._ridesU, {Key? key}) : super(key: key);
+  UserRidesPage(this.id, this._ridesU, this.users, {Key? key}) : super(key: key);
   int id;
   List<Ride> _ridesU = [];
+  Users users;
 
   @override
   State<UserRidesPage> createState() => UserRidesPageState();
@@ -17,7 +19,7 @@ class UserRidesPageState extends State<UserRidesPage> {
 
   reloadRides() async {
     widget._ridesU.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.37:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.1.38:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -105,7 +107,7 @@ class UserRidesPageState extends State<UserRidesPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => EditRidePage(widget._ridesU[index]),
+                                          builder: (context) => EditRidePage(widget._ridesU[index], users: widget.users),
                                         ),
                                       );
                                     }
@@ -137,7 +139,7 @@ class UserRidesPageState extends State<UserRidesPage> {
   }
 
   deleteRide(id) async {
-    http.delete(Uri.parse("http://192.168.1.37:3000/rides/$id"),
+    http.delete(Uri.parse("http://192.168.1.38:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
     );
   }
