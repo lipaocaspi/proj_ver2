@@ -184,7 +184,7 @@ class SignUpPageState extends State<SignUpPage> {
                                   ),
                                   onPressed: () async {
                                     if (_keyForm.currentState!.validate()) {
-                                      final response = await http.get(Uri.parse("http://192.168.1.37:3000/users?email=$email"));
+                                      final response = await http.get(Uri.parse("http://192.168.1.38:3000/users?email=$email"));
                                       if (response.statusCode == 200) {
                                         List<dynamic> myUser = json.decode(response.body);
                                         List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
@@ -245,7 +245,7 @@ class SignUpPageState extends State<SignUpPage> {
       icon: "https://cdn.icon-icons.com/icons2/67/PNG/512/user_13230.png",
       password: _controllerPassword.text
     );
-    final response = await http.post(Uri.parse("http://192.168.1.37:3000/users"),
+    final response = await http.post(Uri.parse("http://192.168.1.38:3000/users"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": newUser.id,

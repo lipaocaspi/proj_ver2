@@ -196,7 +196,7 @@ class _UserPageState extends State<UserPage> {
   }
 
   updateUser(id) async {
-    http.put(Uri.parse("http://192.168.1.37:3000/users/$id"),
+    http.put(Uri.parse("http://192.168.1.38:3000/users/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.users.id,
