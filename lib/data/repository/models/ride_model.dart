@@ -9,6 +9,10 @@ String rideToJson(List<Ride> data) =>
 class Ride {
   Ride({
     required this.userId,
+    required this.userP1Id,
+    required this.userP2Id,
+    required this.userP3Id,
+    required this.userP4Id,
     required this.id,
     required this.start,
     required this.latS,
@@ -26,6 +30,10 @@ class Ride {
   });
 
   int userId;
+  int userP1Id;
+  int userP2Id;
+  int userP3Id;
+  int userP4Id;
   int id;
   String start;
   String latS;
@@ -43,6 +51,10 @@ class Ride {
 
   factory Ride.fromJson(Map<String, dynamic> json) => Ride(
         userId: json["userId"],
+        userP1Id: json["userP1Id"],
+        userP2Id: json["userP2Id"],
+        userP3Id: json["userP3Id"],
+        userP4Id: json["userP4Id"],
         id: json["id"],
         start: json["start"],
         latS: json["latS"],
@@ -61,6 +73,10 @@ class Ride {
 
   Map<String, dynamic> toJson() => {
         "userId": userId,
+        "userP1Id": userP1Id,
+        "userP2Id": userP2Id,
+        "userP3Id": userP3Id,
+        "userP4Id": userP4Id,
         "id": id,
         "start": start,
         "latS": latS,
