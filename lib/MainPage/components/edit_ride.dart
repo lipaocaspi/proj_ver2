@@ -40,6 +40,44 @@ class EditRidePageState extends State<EditRidePage> {
     return await Geolocator.getCurrentPosition();
   }
 
+  updateRide(id) async {
+    final response = await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, dynamic>{
+        "id": widget.ride.id,
+        "userId": widget.ride.userId,
+        "userP1Id": widget.ride.userP1Id,
+        "userP2Id": widget.ride.userP2Id,
+        "userP3Id": widget.ride.userP3Id,
+        "userP4Id": widget.ride.userP4Id,
+        "start": widget.ride.start,
+        "latS": widget.ride.latS,
+        "lonS":  widget.ride.lonS,
+        "end": widget.ride.end,
+        "latE": widget.ride.latE,
+        "lonE": widget.ride.lonE,
+        "dateAndTime": widget.ride.dateAndTime,
+        "vehicle": widget.ride.vehicle,
+        "room": widget.ride.room,
+        "color": widget.ride.color,
+        "plate": widget.ride.plate,
+        "price": widget.ride.price,
+        "state": widget.ride.state
+      })
+    );
+    if(response.statusCode == 200) {
+      setState(() {
+        start = "";
+        end = "";
+      });
+      Navigator.of(context).pop();
+      final upSnack = SnackBar(
+        content: Text("Se ha actualizado correctamente")
+      );
+      ScaffoldMessenger.of(context).showSnackBar(upSnack);
+    }
+  }
+
   String? value1;
   DropdownMenuItem<String> buildMenuVehicle(String vehicle) => DropdownMenuItem(
     value: vehicle,
@@ -303,43 +341,5 @@ class EditRidePageState extends State<EditRidePage> {
         )
       )
     );
-  }
-
-  updateRide(id) async {
-    final response = await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "id": widget.ride.id,
-        "userId": widget.ride.userId,
-        "userP1Id": widget.ride.userP1Id,
-        "userP2Id": widget.ride.userP2Id,
-        "userP3Id": widget.ride.userP3Id,
-        "userP4Id": widget.ride.userP4Id,
-        "start": widget.ride.start,
-        "latS": widget.ride.latS,
-        "lonS":  widget.ride.lonS,
-        "end": widget.ride.end,
-        "latE": widget.ride.latE,
-        "lonE": widget.ride.lonE,
-        "dateAndTime": widget.ride.dateAndTime,
-        "vehicle": widget.ride.vehicle,
-        "room": widget.ride.room,
-        "color": widget.ride.color,
-        "plate": widget.ride.plate,
-        "price": widget.ride.price,
-        "state": widget.ride.state
-      })
-    );
-    if(response.statusCode == 200) {
-      setState(() {
-        start = "";
-        end = "";
-      });
-      Navigator.of(context).pop();
-      final upSnack = SnackBar(
-        content: Text("Se ha actualizado correctamente")
-      );
-      ScaffoldMessenger.of(context).showSnackBar(upSnack);
-    }
   }
 }
