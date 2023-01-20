@@ -9,14 +9,13 @@ import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/MainPage/main_page_screen.dart';
 import 'package:proj_ver1/SignupPage/signup_page_screen.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
-import 'package:proj_ver1/data/repository/models/chat_model.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
   final List<Ride> _rides = [];
   final List<Ride> _ridesU = [];
-  final List<Chat> _chats = [];
+  final List<Ride> _ridesP = [];
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -47,7 +46,7 @@ class LoginPageState extends State<LoginPage> {
         int id = user[0].id;
         widget._rides.clear();
         widget._ridesU.clear();
-        widget._chats.clear();
+        widget._ridesP.clear();
 
         final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
 
@@ -57,10 +56,11 @@ class LoginPageState extends State<LoginPage> {
           setState(() {
             widget._rides.addAll(rides.where((element) => element.state == false && id != element.userId));
             widget._ridesU.addAll(rides.where((element) => id == element.userId));
+            widget._ridesP.addAll(rides.where((element) => element.userP1Id == id || element.userP2Id == id || element.userP3Id == id || element.userP4Id == id));
           });
           Navigator.of(context).push(
             PageTransition(
-              child: MainPage(id: id, users: user[0], ridesA: widget._rides, ridesU: widget._ridesU),
+              child: MainPage(id: id, users: user[0], ridesA: widget._rides, ridesU: widget._ridesU, ridesP: widget._ridesP),
               type: PageTransitionType.fade,
             ),
           );
