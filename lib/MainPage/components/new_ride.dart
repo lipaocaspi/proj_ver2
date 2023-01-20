@@ -40,6 +40,71 @@ class NewRidePageState extends State<NewRidePage> {
     return await Geolocator.getCurrentPosition();
   }
 
+  postRide() async {
+    newRide = Ride(
+      id: 20,
+      userId: widget.users.id,
+      userP1Id: 0,
+      userP2Id: 0,
+      userP3Id: 0,
+      userP4Id: 0,
+      start: _controllerStart.text,
+      latS: latS,
+      lonS: lonS,
+      end: _controllerEnd.text,
+      latE: latE,
+      lonE: lonE,
+      dateAndTime: _controllerDate.text,
+      vehicle: value1!,
+      room: _controllerRoom.text,
+      color: _controllerColor.text,
+      plate: _controllerPlate.text,
+      price: _controllerPrice.text,
+      state: false,
+    );
+    final response = await http.post(Uri.parse("http://192.168.1.40:3000/rides"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, dynamic>{
+        "id": newRide.id,
+        "userId": newRide.userId,
+        "userP1Id": newRide.userP1Id,
+        "userP2Id": newRide.userP2Id,
+        "userP3Id": newRide.userP3Id,
+        "userP4Id": newRide.userP4Id,
+        "start": newRide.start,
+        "latS": newRide.latS,
+        "lonS": newRide.lonS,
+        "end": newRide.end,
+        "latE": newRide.latE,
+        "lonE": newRide.lonE,
+        "dateAndTime": newRide.dateAndTime,
+        "vehicle": newRide.vehicle,
+        "room": newRide.room,
+        "color": newRide.color,
+        "plate": newRide.plate,
+        "price": newRide.price,
+        "state": newRide.state,
+        })
+    );
+    if (response.statusCode == 201) {
+      Navigator.of(context).pop();
+      final successSnack = SnackBar(
+        content: Text("Viaje creado con éxito"),
+        action: SnackBarAction(
+          label: "Cerrar",
+          onPressed: () {
+            Navigator.of(context);
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(successSnack);
+    }
+    setState(() {
+      start = "";
+      end = "";
+    });
+  }
+
   String? value1;
   DropdownMenuItem<String> buildMenuVehicle(String vehicle) => DropdownMenuItem(
     value: vehicle,
@@ -276,70 +341,5 @@ class NewRidePageState extends State<NewRidePage> {
         ),
       )
     );
-  }
-
-  postRide() async {
-    newRide = Ride(
-      id: 20,
-      userId: widget.users.id,
-      userP1Id: 0,
-      userP2Id: 0,
-      userP3Id: 0,
-      userP4Id: 0,
-      start: _controllerStart.text,
-      latS: latS,
-      lonS: lonS,
-      end: _controllerEnd.text,
-      latE: latE,
-      lonE: lonE,
-      dateAndTime: _controllerDate.text,
-      vehicle: value1!,
-      room: _controllerRoom.text,
-      color: _controllerColor.text,
-      plate: _controllerPlate.text,
-      price: _controllerPrice.text,
-      state: false,
-    );
-    final response = await http.post(Uri.parse("http://192.168.1.40:3000/rides"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "id": newRide.id,
-        "userId": newRide.userId,
-        "userP1Id": newRide.userP1Id,
-        "userP2Id": newRide.userP2Id,
-        "userP3Id": newRide.userP3Id,
-        "userP4Id": newRide.userP4Id,
-        "start": newRide.start,
-        "latS": newRide.latS,
-        "lonS": newRide.lonS,
-        "end": newRide.end,
-        "latE": newRide.latE,
-        "lonE": newRide.lonE,
-        "dateAndTime": newRide.dateAndTime,
-        "vehicle": newRide.vehicle,
-        "room": newRide.room,
-        "color": newRide.color,
-        "plate": newRide.plate,
-        "price": newRide.price,
-        "state": newRide.state,
-        })
-    );
-    if (response.statusCode == 201) {
-      Navigator.of(context).pop();
-      final successSnack = SnackBar(
-        content: Text("Viaje creado con éxito"),
-        action: SnackBarAction(
-          label: "Cerrar",
-          onPressed: () {
-            Navigator.of(context);
-          },
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(successSnack);
-    }
-    setState(() {
-      start = "";
-      end = "";
-    });
   }
 }
