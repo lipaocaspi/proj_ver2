@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:proj_ver1/constants.dart';
 import 'package:proj_ver1/variables.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
@@ -50,40 +49,8 @@ class EditRidePageState extends State<EditRidePage> {
     ),
   );
 
-  final toast = FToast();
-
-  @override
-  void initState() {
-    super.initState();
-    toast.init(context);
-  }
-
   @override
   Widget build(BuildContext context) {
-    Widget saveToast() => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        color: const Color.fromARGB(255, 197, 197, 197),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.drive_eta, color: Colors.black87),
-          space,
-          Text(
-            'Se ha guardado exitosamente',
-            style: TextStyle(color: Colors.black, fontSize: 15),
-          ),
-        ],
-      ),
-    );
-
-    void showSToast() => toast.showToast(
-      child: saveToast(),
-      gravity: ToastGravity.BOTTOM,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Editar Viaje"),
@@ -99,8 +66,6 @@ class EditRidePageState extends State<EditRidePage> {
             onPressed: () {
               if (_keyForm.currentState!.validate()) {
                 updateRide(widget.ride.id);
-                Navigator.of(context).pop();
-                showSToast();
               }
             },
           )
@@ -149,6 +114,8 @@ class EditRidePageState extends State<EditRidePage> {
                               );
                               setState(() {
                                 widget.ride.start = location;
+                                widget.ride.latS = latS;
+                                widget.ride.lonS = lonS;
                               });
                             }
                           );
@@ -196,6 +163,8 @@ class EditRidePageState extends State<EditRidePage> {
                               );
                               setState(() {
                                 widget.ride.end = location;
+                                widget.ride.latE = latE;
+                                widget.ride.lonE = lonE;
                               });
                             }
                           );
@@ -337,17 +306,21 @@ class EditRidePageState extends State<EditRidePage> {
   }
 
   updateRide(id) async {
-    final response = await http.put(Uri.parse("http://192.168.1.38:3000/rides/$id"),
+    final response = await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
         "userId": widget.ride.userId,
+        "userP1Id": widget.ride.userP1Id,
+        "userP2Id": widget.ride.userP2Id,
+        "userP3Id": widget.ride.userP3Id,
+        "userP4Id": widget.ride.userP4Id,
         "start": widget.ride.start,
-        "latS": latS,
-        "lonS":  lonS,
+        "latS": widget.ride.latS,
+        "lonS":  widget.ride.lonS,
         "end": widget.ride.end,
-        "latE": latE,
-        "lonE": lonE,
+        "latE": widget.ride.latE,
+        "lonE": widget.ride.lonE,
         "dateAndTime": widget.ride.dateAndTime,
         "vehicle": widget.ride.vehicle,
         "room": widget.ride.room,
@@ -362,6 +335,11 @@ class EditRidePageState extends State<EditRidePage> {
         start = "";
         end = "";
       });
+      Navigator.of(context).pop();
+      final upSnack = SnackBar(
+        content: Text("Se ha actualizado correctamente")
+      );
+      ScaffoldMessenger.of(context).showSnackBar(upSnack);
     }
   }
 }
