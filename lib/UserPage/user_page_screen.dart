@@ -16,6 +16,20 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final _keyForm = GlobalKey<FormState>();
 
+  updateUser(id) async {
+    http.put(Uri.parse("http://192.168.1.40:3000/users/$id"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, dynamic>{
+        "id": widget.users.id,
+        "name": widget.users.name,
+        "dateOfBirth": widget.users.dateOfBirth,
+        "email": widget.users.email,
+        "icon": widget.users.icon,
+        "password": widget.users.password
+      })
+    );
+  }
+
   static final icondecoration = BoxDecoration(
     border: Border.all(
       color: Colors.grey,
@@ -192,20 +206,6 @@ class _UserPageState extends State<UserPage> {
           ),
         ],
       ),
-    );
-  }
-
-  updateUser(id) async {
-    http.put(Uri.parse("http://192.168.1.38:3000/users/$id"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "id": widget.users.id,
-        "name": widget.users.name,
-        "dateOfBirth": widget.users.dateOfBirth,
-        "email": widget.users.email,
-        "icon": widget.users.icon,
-        "password": widget.users.password
-      })
     );
   }
 }
