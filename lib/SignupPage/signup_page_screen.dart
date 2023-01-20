@@ -15,6 +15,7 @@ class SignUpPage extends StatefulWidget {
   SignUpPage({super.key});
   final List<Ride> _rides = [];
   final List<Ride> _ridesU = [];
+  final List<Ride> _ridesP = [];
 
   @override
   SignUpPageState createState() => SignUpPageState();
@@ -52,6 +53,7 @@ class SignUpPageState extends State<SignUpPage> {
     if (response.statusCode == 201) {
       widget._rides.clear();
       widget._ridesU.clear();
+      widget._ridesP.clear();
       final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
 
       if (response.statusCode == 200) {
@@ -60,10 +62,11 @@ class SignUpPageState extends State<SignUpPage> {
         setState(() {
           widget._rides.addAll(rides.where((element) => element.state == false && newUser.id != element.userId));
           widget._ridesU.addAll(rides.where((element) => newUser.id == element.userId));
+          widget._ridesP.addAll(rides.where((element) => element.userP1Id == newUser.id || element.userP2Id == newUser.id || element.userP3Id == newUser.id || element.userP4Id == newUser.id));
         });
         Navigator.of(context).push(
           PageTransition(
-            child: MainPage(id: newUser.id, users: newUser, ridesA: widget._rides, ridesU: widget._ridesU),
+            child: MainPage(id: newUser.id, users: newUser, ridesA: widget._rides, ridesU: widget._ridesU, ridesP: widget._ridesP),
             type: PageTransitionType.fade,
           ),
         );
