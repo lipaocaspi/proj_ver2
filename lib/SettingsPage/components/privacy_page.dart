@@ -84,6 +84,72 @@ class PrivacyPageState extends State<PrivacyPage> {
     return true;
   }
 
+  updateUserPassword(id) async {
+    final response = await http.put(Uri.parse("http://192.168.1.40:3000/users/$id"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, dynamic>{
+        "id": widget.users.id,
+        "name": widget.users.name,
+        "dateOfBirth": widget.users.dateOfBirth,
+        "email": widget.users.email,
+        "icon": widget.users.icon,
+        "password": widget.users.password
+      })
+    );
+    if(response.statusCode == 200) {
+      Navigator.pop(context);
+      final successUpSnack = SnackBar(
+        content: Text("Contraseña actualizada"),
+        action: SnackBarAction(
+          label: "Cerrar",
+          onPressed: () {
+            Navigator.of(context);
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(successUpSnack);
+    }
+  }
+
+  deleteUser(id) async {
+    final response = await http.delete(
+      Uri.parse("http://192.168.1.40:3000/users/$id"),
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      final successDelSnack = SnackBar(
+        content: Text("Se ha borrado exitosamente"),
+        action: SnackBarAction(
+          label: "Cerrar",
+          onPressed: () {
+            Navigator.of(context);
+          },
+        ),
+      );
+      if(widget._ridesU.isNotEmpty) {
+        for(var i = 0; i == widget._ridesU.length; i++){
+          id = widget._ridesU[i].id;
+          http.delete(Uri.parse("http://192.168.1.40:3000/rides/$id"));
+        }
+        Navigator.of(context).push(
+          PageTransition(
+            child: LoginPage(),
+            type: PageTransitionType.fade,
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(successDelSnack);
+      } else {
+        Navigator.of(context).push(
+          PageTransition(
+            child: LoginPage(),
+            type: PageTransitionType.fade,
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(successDelSnack);
+      }
+    }
+  }
+
   static final bdecoration = BoxDecoration(
     color: Colors.grey.withOpacity(0.1),
   );
@@ -569,71 +635,5 @@ class PrivacyPageState extends State<PrivacyPage> {
         ],
       ),
     );
-  }
-
-  updateUserPassword(id) async {
-    final response = await http.put(Uri.parse("http://192.168.1.40:3000/users/$id"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "id": widget.users.id,
-        "name": widget.users.name,
-        "dateOfBirth": widget.users.dateOfBirth,
-        "email": widget.users.email,
-        "icon": widget.users.icon,
-        "password": widget.users.password
-      })
-    );
-    if(response.statusCode == 200) {
-      Navigator.pop(context);
-      final successUpSnack = SnackBar(
-        content: Text("Contraseña actualizada"),
-        action: SnackBarAction(
-          label: "Cerrar",
-          onPressed: () {
-            Navigator.of(context);
-          },
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(successUpSnack);
-    }
-  }
-
-  deleteUser(id) async {
-    final response = await http.delete(
-      Uri.parse("http://192.168.1.40:3000/users/$id"),
-      headers: {"Content-Type": "application/json"},
-    );
-    if (response.statusCode == 200) {
-      final successDelSnack = SnackBar(
-        content: Text("Se ha borrado exitosamente"),
-        action: SnackBarAction(
-          label: "Cerrar",
-          onPressed: () {
-            Navigator.of(context);
-          },
-        ),
-      );
-      if(widget._ridesU.isNotEmpty) {
-        for(var i = 0; i == widget._ridesU.length; i++){
-          id = widget._ridesU[i].id;
-          http.delete(Uri.parse("http://192.168.1.40:3000/rides/$id"));
-        }
-        Navigator.of(context).push(
-          PageTransition(
-            child: LoginPage(),
-            type: PageTransitionType.fade,
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(successDelSnack);
-      } else {
-        Navigator.of(context).push(
-          PageTransition(
-            child: LoginPage(),
-            type: PageTransitionType.fade,
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(successDelSnack);
-      }
-    }
   }
 }
