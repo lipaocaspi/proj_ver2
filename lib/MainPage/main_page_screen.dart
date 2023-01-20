@@ -7,20 +7,24 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/UserPage/user_page_screen.dart';
-import 'package:proj_ver1/ImboxPage/imbox_page_screen.dart';
+import 'package:proj_ver1/LoginPage/login_page_screen.dart';
 import 'package:proj_ver1/MainPage/components/new_ride.dart';
 import 'package:proj_ver1/MainPage/components/ride_page.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/SettingsPage/settings_page_screen.dart';
+import 'package:proj_ver1/data/repository/models/chat_model.dart';
 import 'package:proj_ver1/UserRidesPage/user_rides_page_screen.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key? key, required this.id, required this.users}) : super(key: key);
+  MainPage({Key? key, required this.id, required this.users, required this.ridesA, required this.ridesU, required this.ridesP}) : super(key: key);
   final Users users;
   final int id;
-  final List<Ride> _rides = [];
-  final List<Ride> _ridesU = [];
+  List<Ride> ridesA = [];
+  List<Ride> ridesU = [];
+  List<Ride> ridesP = [];
+  final List<Users> _users = [];
+  final List<Chat> chats = [];
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -41,16 +45,16 @@ class MainPageState extends State<MainPage> {
   }
 
   loadRides() async {
-    widget._rides.clear();
-    widget._ridesU.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.38:3000/rides"));
+    widget.ridesA.clear();
+    widget.ridesU.clear();
+    final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
       List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
       setState(() {
-        widget._rides.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
-        widget._ridesU.addAll(rides.where((element) => widget.id == element.userId));
+        widget.ridesA.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
+        widget.ridesU.addAll(rides.where((element) => widget.id == element.userId));
       });
       final upSnack = SnackBar(
         content: Text("Viajes actualizados"),
@@ -66,15 +70,43 @@ class MainPageState extends State<MainPage> {
   }
 
   loadFilter() async {
-    widget._rides.clear();
+    widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.38:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
+        await http.get(Uri.parse("http://192.168.1.40:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
       List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
       setState(() {
-        widget._rides.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
+        widget.ridesA.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
+      });
+    }
+  }
+
+  loadFilterCloserDate() async {
+    widget.ridesA.clear();
+    final response =
+        await http.get(Uri.parse("http://192.168.1.40:3000/rides?_sort=dateAndTime&_order=asc"));
+
+    if (response.statusCode == 200) {
+      List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
+      List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
+      setState(() {
+        widget.ridesA.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
+      });
+    }
+  }
+
+  loadFilterFurtherDate() async {
+    widget.ridesA.clear();
+    final response =
+        await http.get(Uri.parse("http://192.168.1.40:3000/rides?_sort=dateAndTime&_order=desc"));
+
+    if (response.statusCode == 200) {
+      List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
+      List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
+      setState(() {
+        widget.ridesA.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
       });
     }
   }
@@ -182,28 +214,11 @@ class MainPageState extends State<MainPage> {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     PageTransition(
-                      child: UserRidesPage(widget.users.id, widget._ridesU, widget.users),
+                      child: UserRidesPage(widget.users.id, widget.ridesU, widget.ridesP, widget.users),
                       type: PageTransitionType.rightToLeft,
                     ),
                   );
                 }
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.message, color: Colors.green),
-                title: Text(
-                  "Mensajes",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    PageTransition(
-                      child: ImboxPage(),
-                      type: PageTransitionType.rightToLeft,
-                    ),
-                  );
-                },
               ),
               Divider(),
               ListTile(
@@ -216,7 +231,23 @@ class MainPageState extends State<MainPage> {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     PageTransition(
-                      child: SettingsPage(widget.users, widget._ridesU),
+                      child: SettingsPage(widget.users, widget.ridesU),
+                      type: PageTransitionType.rightToLeft,
+                    ),
+                  );
+                },
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.logout, color: Colors.green),
+                title: Text(
+                  "Cerrar Sesión",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageTransition(
+                      child: LoginPage(),
                       type: PageTransitionType.rightToLeft,
                     ),
                   );
@@ -240,14 +271,43 @@ class MainPageState extends State<MainPage> {
         appBar: AppBar(
           title: Text("Viajes"),
           actions: [
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: (){
-                loadRides();
-                _controllerSearchStart.clear();
-                _controllerSearchEnd.clear();
-                _controllerSearchDate.clear();
-              }, 
+            PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem<int>(
+                    value: 0,
+                    child: Text("Actualizar")
+                  ),
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: Text("Mostrar por fecha más cercana")
+                  ),
+                  PopupMenuItem<int>(
+                    value: 2,
+                    child: Text("Mostrar por fecha más lejana")
+                  ),
+                ];
+              },
+              onSelected: (value) {
+                if (value == 0) {
+                  loadRides();
+                  _controllerSearchStart.clear();
+                  _controllerSearchEnd.clear();
+                  _controllerSearchDate.clear();
+                }
+                if (value == 1) {
+                  loadFilterCloserDate();
+                  _controllerSearchStart.clear();
+                  _controllerSearchEnd.clear();
+                  _controllerSearchDate.clear();
+                }
+                if (value == 2) {
+                  loadFilterFurtherDate();
+                  _controllerSearchStart.clear();
+                  _controllerSearchEnd.clear();
+                  _controllerSearchDate.clear();
+                }
+              },
             )
           ],
         ),
@@ -334,7 +394,7 @@ class MainPageState extends State<MainPage> {
                               onPressed: () async {
                                 if (formKey.currentState!.validate()) {
                                   await loadFilter();
-                                  if(widget._rides.isEmpty){
+                                  if(widget.ridesA.isEmpty){
                                     showRidesToast();
                                   }
                                   _controllerSearchStart.clear();
@@ -362,7 +422,7 @@ class MainPageState extends State<MainPage> {
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height *0.6,
                           child: ListView.builder(
-                            itemCount: widget._rides.length,
+                            itemCount: widget.ridesA.length,
                             physics: ScrollPhysics(),
                             itemBuilder: (context, index) {
                               return Card(
@@ -373,7 +433,7 @@ class MainPageState extends State<MainPage> {
                                     onTap: (() {
                                       Navigator.of(context).push(
                                         PageTransition(
-                                          child: RidePage(ride: widget._rides[index], id: widget.users.id),
+                                          child: RidePage(ride: widget.ridesA[index], id: widget.ridesA[index].id, users: widget.users, usersL: widget._users),
                                           type: PageTransitionType.rightToLeft,
                                         ),
                                       );
@@ -383,7 +443,7 @@ class MainPageState extends State<MainPage> {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
-                                          Icon(widget._rides[index].vehicle == 'Motocicleta' ? Icons.motorcycle : Icons.drive_eta, size: 25),
+                                          Icon(widget.ridesA[index].vehicle == 'Motocicleta' ? Icons.motorcycle : Icons.drive_eta, size: 25),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
@@ -396,7 +456,7 @@ class MainPageState extends State<MainPage> {
                                               Expanded(
                                                 flex: 5,
                                                 child: Text(
-                                                  widget._rides[index].start,
+                                                  widget.ridesA[index].start,
                                                   overflow: TextOverflow.ellipsis,
                                                   maxLines: 2,
                                                 )
@@ -415,7 +475,7 @@ class MainPageState extends State<MainPage> {
                                               Expanded(
                                                 flex: 4,
                                                 child: Text(
-                                                  widget._rides[index].end,
+                                                  widget.ridesA[index].end,
                                                   overflow: TextOverflow.ellipsis,
                                                   maxLines: 2,
                                                 )
@@ -426,7 +486,7 @@ class MainPageState extends State<MainPage> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
-                                              Text(widget._rides[index].dateAndTime)
+                                              Text(widget.ridesA[index].dateAndTime)
                                             ],
                                           ),
                                         ],
