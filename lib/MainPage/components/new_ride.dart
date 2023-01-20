@@ -282,6 +282,10 @@ class NewRidePageState extends State<NewRidePage> {
     newRide = Ride(
       id: 20,
       userId: widget.users.id,
+      userP1Id: 0,
+      userP2Id: 0,
+      userP3Id: 0,
+      userP4Id: 0,
       start: _controllerStart.text,
       latS: latS,
       lonS: lonS,
@@ -296,11 +300,15 @@ class NewRidePageState extends State<NewRidePage> {
       price: _controllerPrice.text,
       state: false,
     );
-    final response = await http.post(Uri.parse("http://192.168.1.38:3000/rides"),
+    final response = await http.post(Uri.parse("http://192.168.1.40:3000/rides"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": newRide.id,
         "userId": newRide.userId,
+        "userP1Id": newRide.userP1Id,
+        "userP2Id": newRide.userP2Id,
+        "userP3Id": newRide.userP3Id,
+        "userP4Id": newRide.userP4Id,
         "start": newRide.start,
         "latS": newRide.latS,
         "lonS": newRide.lonS,
