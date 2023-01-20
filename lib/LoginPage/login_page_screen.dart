@@ -9,9 +9,14 @@ import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/MainPage/main_page_screen.dart';
 import 'package:proj_ver1/SignupPage/signup_page_screen.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
+import 'package:proj_ver1/data/repository/models/chat_model.dart';
+import 'package:proj_ver1/data/repository/models/ride_model.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+  final List<Ride> _rides = [];
+  final List<Ride> _ridesU = [];
+  final List<Chat> _chats = [];
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -21,6 +26,49 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   final _keyForm = GlobalKey<FormState>();
+
+  validate() async {
+    final response = await http.get(Uri.parse("http://192.168.1.40:3000/users?email=$email&password=$password"));
+    if (response.statusCode == 200) {
+      List<dynamic> myUser = json.decode(response.body);
+      List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
+      if (user.isEmpty) {
+        final credentialsSnack = SnackBar(
+          content: Text("Las credenciales son incorrectas"),
+          action: SnackBarAction(
+            label: "Cerrar",
+            onPressed: () {
+              Navigator.of(context);
+            },
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(credentialsSnack);
+      } else {
+        int id = user[0].id;
+        widget._rides.clear();
+        widget._ridesU.clear();
+        widget._chats.clear();
+
+        final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
+
+        if (response.statusCode == 200) {
+          List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
+          List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
+          setState(() {
+            widget._rides.addAll(rides.where((element) => element.state == false && id != element.userId));
+            widget._ridesU.addAll(rides.where((element) => id == element.userId));
+          });
+          Navigator.of(context).push(
+            PageTransition(
+              child: MainPage(id: id, users: user[0], ridesA: widget._rides, ridesU: widget._ridesU),
+              type: PageTransitionType.fade,
+            ),
+          );
+        }
+      }
+      return ;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +171,7 @@ class LoginPageState extends State<LoginPage> {
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       PageTransition(
-                                        child: const SignUpPage(),
+                                        child: SignUpPage(),
                                         type: PageTransitionType.fade,
                                       ),
                                     );
@@ -142,32 +190,7 @@ class LoginPageState extends State<LoginPage> {
                                   ),
                                   onPressed: () async {
                                     if (_keyForm.currentState!.validate()) {
-                                      final response = await http.get(Uri.parse("http://192.168.1.38:3000/users?email=$email&password=$password"));
-                                      if (response.statusCode == 200) {
-                                        List<dynamic> myUser = json.decode(response.body);
-                                        List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
-                                        if (user.isEmpty) {
-                                          final credentialsSnack = SnackBar(
-                                            content: Text("Las credenciales son incorrectas"),
-                                            action: SnackBarAction(
-                                              label: "Cerrar",
-                                              onPressed: () {
-                                                Navigator.of(context);
-                                              },
-                                            ),
-                                          );
-                                          ScaffoldMessenger.of(context).showSnackBar(credentialsSnack);
-                                        } else {
-                                          int id = user[0].id;
-                                          Navigator.of(context).push(
-                                            PageTransition(
-                                              child: MainPage(id: id, users: user[0]),
-                                              type: PageTransitionType.fade,
-                                            ),
-                                          );
-                                        }
-                                        return ;
-                                      }
+                                      validate();
                                     }
                                   },
                                 ),
