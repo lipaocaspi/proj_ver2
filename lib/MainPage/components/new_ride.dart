@@ -61,6 +61,7 @@ class NewRidePageState extends State<NewRidePage> {
       plate: _controllerPlate.text,
       price: _controllerPrice.text,
       state: false,
+      stateR: false,
     );
     final response = await http.post(Uri.parse("http://192.168.1.40:3000/rides"),
       headers: {"Content-Type": "application/json"},
@@ -84,6 +85,7 @@ class NewRidePageState extends State<NewRidePage> {
         "plate": newRide.plate,
         "price": newRide.price,
         "state": newRide.state,
+        "stateR": newRide.stateR,
         })
     );
     if (response.statusCode == 201) {
