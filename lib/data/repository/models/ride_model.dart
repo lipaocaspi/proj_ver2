@@ -27,6 +27,7 @@ class Ride {
     required this.plate,
     required this.price,
     required this.state,
+    required this.stateR,
   });
 
   int userId;
@@ -48,6 +49,7 @@ class Ride {
   String plate;
   String price;
   bool state;
+  bool stateR;
 
   factory Ride.fromJson(Map<String, dynamic> json) => Ride(
         userId: json["userId"],
@@ -69,6 +71,7 @@ class Ride {
         plate: json["plate"],
         price: json["price"],
         state: json["state"],
+        stateR: json["stateR"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -91,67 +94,6 @@ class Ride {
         "plate": plate,
         "price": price,
         "state": state,
+        "stateR": stateR,
       };
 }
-
-// class Start {
-//   Start({
-//     required this.name,
-//     required this.geo,
-//   });
-
-//   String name;
-//   Geo geo;
-
-//   factory Start.fromJson(Map<String, dynamic> json) =>
-//   Start(
-//     name: json["name"],
-//     geo: Geo.fromJson(json["geo"]),
-//   );
-
-//   Map<String, dynamic> toJson() => {
-//     "name": name,
-//     "geo": geo.toJson(),
-//   };
-// }
-
-// class End {
-//   End({
-//     required this.name,
-//     required this.geo,
-//   });
-
-//   String name;
-//   Geo geo;
-
-//   factory End.fromJson(Map<String, dynamic> json) =>
-//   End(
-//     name: json["name"],
-//     geo: Geo.fromJson(json["geo"]),
-//   );
-
-//   Map<String, dynamic> toJson() => {
-//     "name": name,
-//     "geo": geo.toJson(),
-//   };
-// }
-
-// class Geo {
-//   Geo({
-//     required this.lat,
-//     required this.lon,
-//   });
-
-//   String lat;
-//   String lon;
-
-//   factory Geo.fromJson(Map<String, dynamic> json) => Geo(
-//     lat: json["lat"],
-//     lon: json["lon"],
-//   );
-
-//   Map<String, dynamic> toJson() => {
-//     "lat": lat,
-//     "lon": lon,
-//   };
-// }
