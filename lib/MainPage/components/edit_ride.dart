@@ -62,7 +62,8 @@ class EditRidePageState extends State<EditRidePage> {
         "color": widget.ride.color,
         "plate": widget.ride.plate,
         "price": widget.ride.price,
-        "state": widget.ride.state
+        "state": widget.ride.state,
+        "stateR": widget.ride.stateR
       })
     );
     if(response.statusCode == 200) {
