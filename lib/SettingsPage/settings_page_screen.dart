@@ -286,9 +286,10 @@ class SettingsPage extends StatelessWidget {
                                               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                                               onPressed: () {
                                                 Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder:(context) => LoginPage()
-                                                  )
+                                                  PageTransition(
+                                                    child: LoginPage(),
+                                                    type: PageTransitionType.fade,
+                                                  ),
                                                 );
                                               },
                                             )
