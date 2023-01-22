@@ -91,13 +91,7 @@ class NewRidePageState extends State<NewRidePage> {
     if (response.statusCode == 201) {
       Navigator.of(context).pop();
       final successSnack = SnackBar(
-        content: Text("Viaje creado con éxito"),
-        action: SnackBarAction(
-          label: "Cerrar",
-          onPressed: () {
-            Navigator.of(context);
-          },
-        ),
+        content: Text("Viaje creado con éxito")
       );
       ScaffoldMessenger.of(context).showSnackBar(successSnack);
     }
