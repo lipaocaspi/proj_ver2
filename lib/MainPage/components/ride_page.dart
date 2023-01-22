@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
@@ -54,81 +54,57 @@ class _RidePageState extends State<RidePage> {
         },
       ),
     );
-    
-    if(widget.ride.userId != widget.users.id) {
-      if(widget.ride.userP1Id == 0) {
-        await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(<String, dynamic>{
-            "id": widget.ride.id,
-            "userId": widget.ride.userId,
-            "userP1Id": widget.users.id,
-            "userP2Id": widget.ride.userP2Id,
-            "userP3Id": widget.ride.userP3Id,
-            "userP4Id": widget.ride.userP4Id,
-            "start": widget.ride.start,
-            "latS": widget.ride.latS,
-            "lonS":  widget.ride.lonS,
-            "end": widget.ride.end,
-            "latE": widget.ride.latE,
-            "lonE": widget.ride.lonE,
-            "dateAndTime": widget.ride.dateAndTime,
-            "vehicle": widget.ride.vehicle,
-            "room": widget.ride.room,
-            "color": widget.ride.color,
-            "plate": widget.ride.plate,
-            "price": widget.ride.price,
-            "state": widget.ride.state
-          })
-        );
-        ScaffoldMessenger.of(context).showSnackBar(doneSnack);
-      } else {
-        if(widget.ride.userP2Id == 0) {
-          if(r == 2 || r == 3 || r == 4) {
-            if(widget.ride.userP1Id != widget.users.id){
-              await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
-                headers: {"Content-Type": "application/json"},
-                body: jsonEncode(<String, dynamic>{
-                  "id": widget.ride.id,
-                  "userId": widget.ride.userId,
-                  "userP1Id": widget.ride.userP1Id,
-                  "userP2Id": widget.users.id,
-                  "userP3Id": widget.ride.userP3Id,
-                  "userP4Id": widget.ride.userP4Id,
-                  "start": widget.ride.start,
-                  "latS": widget.ride.latS,
-                  "lonS":  widget.ride.lonS,
-                  "end": widget.ride.end,
-                  "latE": widget.ride.latE,
-                  "lonE": widget.ride.lonE,
-                  "dateAndTime": widget.ride.dateAndTime,
-                  "vehicle": widget.ride.vehicle,
-                  "room": widget.ride.room,
-                  "color": widget.ride.color,
-                  "plate": widget.ride.plate,
-                  "price": widget.ride.price,
-                  "state": widget.ride.state
-                })
-              );
-              ScaffoldMessenger.of(context).showSnackBar(doneSnack);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(alreadySnack);
-            }
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(fullSnack);
-          }
+    final onSnack = SnackBar(
+      content: Text("El viaje está en curso"),
+      action: SnackBarAction(
+        label: "Cerrar",
+        onPressed: () {
+           Navigator.of(context);
+        },
+      ),
+    );
+
+    if(widget.ride.stateR == false) {
+      if(widget.ride.userId != widget.users.id) {
+        if(widget.ride.userP1Id == 0) {
+          await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(<String, dynamic>{
+              "id": widget.ride.id,
+              "userId": widget.ride.userId,
+              "userP1Id": widget.users.id,
+              "userP2Id": widget.ride.userP2Id,
+              "userP3Id": widget.ride.userP3Id,
+              "userP4Id": widget.ride.userP4Id,
+              "start": widget.ride.start,
+              "latS": widget.ride.latS,
+              "lonS":  widget.ride.lonS,
+              "end": widget.ride.end,
+              "latE": widget.ride.latE,
+              "lonE": widget.ride.lonE,
+              "dateAndTime": widget.ride.dateAndTime,
+              "vehicle": widget.ride.vehicle,
+              "room": widget.ride.room,
+              "color": widget.ride.color,
+              "plate": widget.ride.plate,
+              "price": widget.ride.price,
+              "state": widget.ride.state,
+              "stateR": widget.ride.stateR
+            })
+          );
+          ScaffoldMessenger.of(context).showSnackBar(doneSnack);
         } else {
-          if(widget.ride.userP3Id == 0) {
-            if(r == 3 || r == 4) {
-              if(widget.ride.userP2Id != widget.users.id && widget.ride.userP1Id != widget.users.id) {
+          if(widget.ride.userP2Id == 0) {
+            if(r == 2 || r == 3 || r == 4) {
+              if(widget.ride.userP1Id != widget.users.id){
                 await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
                   headers: {"Content-Type": "application/json"},
                   body: jsonEncode(<String, dynamic>{
                     "id": widget.ride.id,
                     "userId": widget.ride.userId,
                     "userP1Id": widget.ride.userP1Id,
-                    "userP2Id": widget.ride.userP2Id,
-                    "userP3Id": widget.users.id,
+                    "userP2Id": widget.users.id,
+                    "userP3Id": widget.ride.userP3Id,
                     "userP4Id": widget.ride.userP4Id,
                     "start": widget.ride.start,
                     "latS": widget.ride.latS,
@@ -142,7 +118,8 @@ class _RidePageState extends State<RidePage> {
                     "color": widget.ride.color,
                     "plate": widget.ride.plate,
                     "price": widget.ride.price,
-                    "state": widget.ride.state
+                    "state": widget.ride.state,
+                    "stateR": widget.ride.stateR
                   })
                 );
                 ScaffoldMessenger.of(context).showSnackBar(doneSnack);
@@ -153,9 +130,9 @@ class _RidePageState extends State<RidePage> {
               ScaffoldMessenger.of(context).showSnackBar(fullSnack);
             }
           } else {
-            if(widget.ride.userP4Id == 0) {
-              if(r == 4) {
-                if(widget.ride.userP3Id != widget.users.id && widget.ride.userP2Id != widget.users.id && widget.ride.userP1Id != widget.users.id) {
+            if(widget.ride.userP3Id == 0) {
+              if(r == 3 || r == 4) {
+                if(widget.ride.userP2Id != widget.users.id && widget.ride.userP1Id != widget.users.id) {
                   await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
                     headers: {"Content-Type": "application/json"},
                     body: jsonEncode(<String, dynamic>{
@@ -163,8 +140,8 @@ class _RidePageState extends State<RidePage> {
                       "userId": widget.ride.userId,
                       "userP1Id": widget.ride.userP1Id,
                       "userP2Id": widget.ride.userP2Id,
-                      "userP3Id": widget.ride.userP4Id,
-                      "userP4Id": widget.users.id,
+                      "userP3Id": widget.users.id,
+                      "userP4Id": widget.ride.userP4Id,
                       "start": widget.ride.start,
                       "latS": widget.ride.latS,
                       "lonS":  widget.ride.lonS,
@@ -177,7 +154,8 @@ class _RidePageState extends State<RidePage> {
                       "color": widget.ride.color,
                       "plate": widget.ride.plate,
                       "price": widget.ride.price,
-                      "state": widget.ride.state
+                      "state": widget.ride.state,
+                      "stateR": widget.ride.stateR
                     })
                   );
                   ScaffoldMessenger.of(context).showSnackBar(doneSnack);
@@ -188,12 +166,51 @@ class _RidePageState extends State<RidePage> {
                 ScaffoldMessenger.of(context).showSnackBar(fullSnack);
               }
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(fullSnack);
+              if(widget.ride.userP4Id == 0) {
+                if(r == 4) {
+                  if(widget.ride.userP3Id != widget.users.id && widget.ride.userP2Id != widget.users.id && widget.ride.userP1Id != widget.users.id) {
+                    await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+                      headers: {"Content-Type": "application/json"},
+                      body: jsonEncode(<String, dynamic>{
+                        "id": widget.ride.id,
+                        "userId": widget.ride.userId,
+                        "userP1Id": widget.ride.userP1Id,
+                        "userP2Id": widget.ride.userP2Id,
+                        "userP3Id": widget.ride.userP4Id,
+                        "userP4Id": widget.users.id,
+                        "start": widget.ride.start,
+                        "latS": widget.ride.latS,
+                        "lonS":  widget.ride.lonS,
+                        "end": widget.ride.end,
+                        "latE": widget.ride.latE,
+                        "lonE": widget.ride.lonE,
+                        "dateAndTime": widget.ride.dateAndTime,
+                        "vehicle": widget.ride.vehicle,
+                        "room": widget.ride.room,
+                        "color": widget.ride.color,
+                        "plate": widget.ride.plate,
+                        "price": widget.ride.price,
+                        "state": widget.ride.state,
+                        "stateR": widget.ride.stateR
+                      })
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(doneSnack);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(alreadySnack);
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(fullSnack);
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(fullSnack);
+              }
             }
           }
         }
-      }
-    } else {}
+      } else {}
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(onSnack);
+    }
   }
 
   @override
@@ -220,7 +237,7 @@ class _RidePageState extends State<RidePage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(widget.ride.state == false && widget.ride.userId != widget.id ? Icons.add : null),
+            icon: Icon(widget.ride.state == false && widget.ride.userId != widget.users.id ? Icons.add : null),
             onPressed: () {
               addPassenger(widget.id);
             },
