@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           prefixIconColor: Color.fromARGB(255, 131, 131, 131).withOpacity(0.8),
           contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
+            borderRadius: BorderRadius.circular(5),
             borderSide: BorderSide(style: BorderStyle.solid, color: Colors.black)
           )
         ),
