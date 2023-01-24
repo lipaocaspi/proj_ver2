@@ -52,7 +52,7 @@ class MainPageState extends State<MainPage> {
     widget.ridesA.clear();
     widget.ridesU.clear();
     widget.ridesP.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -78,7 +78,7 @@ class MainPageState extends State<MainPage> {
   loadFilter() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -92,7 +92,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserDate() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -106,7 +106,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserCar() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -120,7 +120,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserMoto() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -134,7 +134,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherDate() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -148,7 +148,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherCar() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -162,7 +162,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherMoto() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.40:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -457,7 +457,7 @@ class MainPageState extends State<MainPage> {
                                 prefixIcon: Icon(Icons.room, color: Colors.black),
                               ),
                               textInputAction: TextInputAction.next,
-                              validator: ValidationBuilder().build(),
+                              validator: ValidationBuilder(requiredMessage: "Por favor indique el origen").build(),
                               onChanged: (value) {
                                 searchStart = _controllerSearchStart.text;
                               },
@@ -476,7 +476,7 @@ class MainPageState extends State<MainPage> {
                                 prefixIcon: Icon(Icons.room, color: Colors.black),
                               ),
                               textInputAction: TextInputAction.next,
-                              validator: ValidationBuilder().build(),
+                              validator: ValidationBuilder(requiredMessage: "Por favor indique el destino").build(),
                               onChanged: (value) {
                                 searchEnd = _controllerSearchEnd.text;
                               },
@@ -503,7 +503,7 @@ class MainPageState extends State<MainPage> {
                                 prefixIcon: Icon(Icons.calendar_month, color: Colors.black),
                               ),
                               textInputAction: TextInputAction.done,
-                              validator: ValidationBuilder().build(),
+                              validator: ValidationBuilder(requiredMessage: "Por favor indique la fecha y/o hora").build(),
                               onChanged: (value) {
                                 searchDate = _controllerSearchDate.text;
                               }
