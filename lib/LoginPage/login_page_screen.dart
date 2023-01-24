@@ -27,7 +27,7 @@ class LoginPageState extends State<LoginPage> {
   final _keyForm = GlobalKey<FormState>();
 
   validate() async {
-    final response = await http.get(Uri.parse("http://192.168.1.40:3000/users?email=$email&password=$password"));
+    final response = await http.get(Uri.parse("http://192.168.0.109:3000/users?email=$email&password=$password"));
     if (response.statusCode == 200) {
       List<dynamic> myUser = json.decode(response.body);
       List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
@@ -48,7 +48,7 @@ class LoginPageState extends State<LoginPage> {
         widget._ridesU.clear();
         widget._ridesP.clear();
 
-        final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
+        final response = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
 
         if (response.statusCode == 200) {
           List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -123,7 +123,7 @@ class LoginPageState extends State<LoginPage> {
                             ),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
-                            validator: ValidationBuilder().email().build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor ingrese el correo").email().build(),
                             onChanged: (value) {
                               setState(() {
                                 email = _controllerEmail.text;
@@ -145,7 +145,7 @@ class LoginPageState extends State<LoginPage> {
                             ),
                             obscureText: true,
                             textInputAction: TextInputAction.done,
-                            validator: ValidationBuilder().build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor ingrese la contraseña").build(),
                             onChanged: (value) {
                               setState(() {
                                 password = _controllerPassword.text;
