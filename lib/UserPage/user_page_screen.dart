@@ -17,7 +17,7 @@ class _UserPageState extends State<UserPage> {
   final _keyForm = GlobalKey<FormState>();
 
   updateUser(id) async {
-    http.put(Uri.parse("http://192.168.1.40:3000/users/$id"),
+    http.put(Uri.parse("http://192.168.0.109:3000/users/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.users.id,
@@ -35,7 +35,7 @@ class _UserPageState extends State<UserPage> {
       color: Colors.grey,
       width: 1,
     ),
-    borderRadius: BorderRadius.all(Radius.circular(50)),
+    borderRadius: BorderRadius.all(Radius.circular(25)),
     boxShadow: [
       BoxShadow(
         blurRadius: 3,
@@ -139,14 +139,14 @@ class _UserPageState extends State<UserPage> {
                       children: [
                         TextFormField(
                           initialValue: widget.users.name,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(5),
                               child: Icon(Icons.person),
                             ),
                           ),
                           textInputAction: TextInputAction.next,
-                          validator: ValidationBuilder().build(),
+                          validator: ValidationBuilder(requiredMessage: "Por favor ingrese su nombre").build(),
                           onChanged: (value) {
                             setState(() {
                               if (_keyForm.currentState!.validate()) {
@@ -159,15 +159,15 @@ class _UserPageState extends State<UserPage> {
                         space,
                         TextFormField(
                           initialValue: widget.users.dateOfBirth,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(5),
                               child: Icon(Icons.calendar_month),
                             ),
                           ),
                           keyboardType: TextInputType.datetime,
                           textInputAction: TextInputAction.next,
-                          validator: ValidationBuilder().regExp(RegExp(r"^([0-9]|[1-2][0-9]|(3)[0-1])(\/)(([0-9])|((1)[0-2]))(\/)\d{4}"), "Ingrese una fecha válida").build(),
+                          validator: ValidationBuilder(requiredMessage: "Por favor ingrese su fecha de nacimiento").regExp(RegExp(r"^([0-9]|[1-2][0-9]|(3)[0-1])(\/)(([0-9])|((1)[0-2]))(\/)\d{4}"), "Ingrese una fecha válida").build(),
                           onChanged: (value) {
                             setState(() {
                               if (_keyForm.currentState!.validate()) {
@@ -180,14 +180,14 @@ class _UserPageState extends State<UserPage> {
                         space,
                         TextFormField(
                           initialValue: widget.users.email,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             prefixIcon: Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(5),
                               child: Icon(Icons.email),
                             ),
                           ),
                           textInputAction: TextInputAction.done,
-                          validator: ValidationBuilder().email().build(),
+                          validator: ValidationBuilder(requiredMessage: "Por favor ingrese su correo").email().build(),
                           onChanged: (value) {
                             setState(() {
                               if (_keyForm.currentState!.validate()) {
