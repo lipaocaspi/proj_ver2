@@ -14,6 +14,7 @@ import 'package:proj_ver1/MainPage/components/new_ride_map_s.dart';
 class NewRidePage extends StatefulWidget {
   NewRidePage({Key? key, required this.users}) : super(key: key);
   final Users users;
+  final List<Ride> _ridesCount = [];
 
   @override
   NewRidePageState createState() => NewRidePageState();
@@ -41,64 +42,72 @@ class NewRidePageState extends State<NewRidePage> {
   }
 
   postRide() async {
-    newRide = Ride(
-      id: 20,
-      userId: widget.users.id,
-      userP1Id: 0,
-      userP2Id: 0,
-      userP3Id: 0,
-      userP4Id: 0,
-      start: _controllerStart.text,
-      latS: latS,
-      lonS: lonS,
-      end: _controllerEnd.text,
-      latE: latE,
-      lonE: lonE,
-      dateAndTime: _controllerDate.text,
-      vehicle: value1!,
-      room: _controllerRoom.text,
-      color: _controllerColor.text,
-      plate: _controllerPlate.text,
-      price: _controllerPrice.text,
-      state: false,
-      stateR: false,
-    );
-    final response = await http.post(Uri.parse("http://192.168.1.40:3000/rides"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "id": newRide.id,
-        "userId": newRide.userId,
-        "userP1Id": newRide.userP1Id,
-        "userP2Id": newRide.userP2Id,
-        "userP3Id": newRide.userP3Id,
-        "userP4Id": newRide.userP4Id,
-        "start": newRide.start,
-        "latS": newRide.latS,
-        "lonS": newRide.lonS,
-        "end": newRide.end,
-        "latE": newRide.latE,
-        "lonE": newRide.lonE,
-        "dateAndTime": newRide.dateAndTime,
-        "vehicle": newRide.vehicle,
-        "room": newRide.room,
-        "color": newRide.color,
-        "plate": newRide.plate,
-        "price": newRide.price,
-        "state": newRide.state,
-        "stateR": newRide.stateR,
-        })
-    );
-    if (response.statusCode == 201) {
-      Navigator.of(context).pop();
-      final successSnack = SnackBar(
-        content: Text("Viaje creado con éxito")
+    final res = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
+    if (res.statusCode == 200) {
+      List<dynamic> myRides = json.decode(utf8.decode(res.bodyBytes));
+      List<Ride> ride = myRides.map((e) => Ride.fromJson(e)).toList();
+      setState(() {
+        widget._ridesCount.addAll(ride);
+      });
+      newRide = Ride(
+        id: widget._ridesCount.length + 1,
+        userId: widget.users.id,
+        userP1Id: 0,
+        userP2Id: 0,
+        userP3Id: 0,
+        userP4Id: 0,
+        start: _controllerStart.text,
+        latS: latS,
+        lonS: lonS,
+        end: _controllerEnd.text,
+        latE: latE,
+        lonE: lonE,
+        dateAndTime: _controllerDate.text,
+        vehicle: value1!,
+        room: _controllerRoom.text,
+        color: _controllerColor.text,
+        plate: _controllerPlate.text,
+        price: _controllerPrice.text,
+        state: false,
+        stateR: false,
       );
-      ScaffoldMessenger.of(context).showSnackBar(successSnack);
+      final response = await http.post(Uri.parse("http://192.168.0.109:3000/rides"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(<String, dynamic>{
+          "id": newRide.id,
+          "userId": newRide.userId,
+          "userP1Id": newRide.userP1Id,
+          "userP2Id": newRide.userP2Id,
+          "userP3Id": newRide.userP3Id,
+          "userP4Id": newRide.userP4Id,
+          "start": newRide.start,
+          "latS": newRide.latS,
+          "lonS": newRide.lonS,
+          "end": newRide.end,
+          "latE": newRide.latE,
+          "lonE": newRide.lonE,
+          "dateAndTime": newRide.dateAndTime,
+          "vehicle": newRide.vehicle,
+          "room": newRide.room,
+          "color": newRide.color,
+          "plate": newRide.plate,
+          "price": newRide.price,
+          "state": newRide.state,
+          "stateR": newRide.stateR,
+          })
+      );
+      if (response.statusCode == 201) {
+        Navigator.of(context).pop();
+        final successSnack = SnackBar(
+          content: Text("Viaje creado con éxito")
+        );
+        ScaffoldMessenger.of(context).showSnackBar(successSnack);
+      }
+      setState(() {
+        start = "";
+        end = "";
+      });
     }
-    setState(() {
-      start = "";
-      end = "";
-    });
   }
 
   String? value1;
@@ -252,7 +261,7 @@ class NewRidePageState extends State<NewRidePage> {
                   ),
                   keyboardType: TextInputType.datetime,
                   textInputAction: TextInputAction.next,
-                  validator: ValidationBuilder().regExp(RegExp(r"^(([0-9])|[1-2][0-9]|(3)[0-1])(\/)(([0-9])|((1)[0-2]))(\/)\d{4} (00|[0-9]|1[0-9]|2[0-3]):([0-5][0-9])"), "Ingrese una fecha válida").build(),
+                  validator: ValidationBuilder(requiredMessage: "Por favor ingrese la fecha y hora").regExp(RegExp(r"^(([0-9])|[1-2][0-9]|(3)[0-1])(\/)(([0-9])|((1)[0-2]))(\/)\d{4} (00|[0-9]|1[0-9]|2[0-3]):([0-5][0-9])"), "Ingrese una fecha válida").build(),
                 ),
               ),
               space,
@@ -285,7 +294,7 @@ class NewRidePageState extends State<NewRidePage> {
                         decoration: InputDecoration(hintText: "Cupos"),
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
-                        validator: ValidationBuilder().regExp(RegExp(r"^([1-4]$)"), "Número no válido").build(),
+                        validator: ValidationBuilder(requiredMessage: "Ingrese los cupos").regExp(RegExp(r"^([1-4]$)"), "Número no válido").build(),
                       ),
                     )
                   )
@@ -301,7 +310,7 @@ class NewRidePageState extends State<NewRidePage> {
                         controller: _controllerColor,
                         decoration: InputDecoration(hintText: "Color"),
                         textInputAction: TextInputAction.next,
-                        validator: ValidationBuilder().build(),
+                        validator: ValidationBuilder(requiredMessage: "Ingrese el color").build(),
                       ),
                     )
                   ),
@@ -312,7 +321,7 @@ class NewRidePageState extends State<NewRidePage> {
                         controller: _controllerPlate,
                         decoration: InputDecoration(hintText: "Placa"),
                         textInputAction: TextInputAction.next,
-                        validator: ValidationBuilder().regExp(RegExp(r"^([A-Z]{3}\d{3}$)|([A-Z]{3}\d{2}[A-Z]$)"), "Placa no válida").build(),
+                        validator: ValidationBuilder(requiredMessage: "Ingrese la placa").regExp(RegExp(r"^([A-Z]{3}\d{3}$)|([A-Z]{3}\d{2}[A-Z]$)"), "Placa no válida").build(),
                       ),
                     )
                   )
@@ -330,7 +339,7 @@ class NewRidePageState extends State<NewRidePage> {
                 ),
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
-                validator: ValidationBuilder().regExp(RegExp(r"^(\d{4})$"), "Precio no válido").build(),
+                validator: ValidationBuilder(requiredMessage: "Por favor ingrese el valor").regExp(RegExp(r"^(\d{4})$"), "Precio no válido").build(),
               ),
             ],
           ),
