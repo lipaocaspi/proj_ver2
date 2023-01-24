@@ -37,7 +37,7 @@ class _RidePageState extends State<RidePage> {
       ),
     );
     final doneSnack = SnackBar(
-      content: Text("Eres parte de viaje"),
+      content: Text("Eres parte del viaje"),
       action: SnackBarAction(
         label: "Cerrar",
         onPressed: () {
@@ -67,7 +67,7 @@ class _RidePageState extends State<RidePage> {
     if(widget.ride.stateR == false) {
       if(widget.ride.userId != widget.users.id) {
         if(widget.ride.userP1Id == 0) {
-          await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+          await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(<String, dynamic>{
               "id": widget.ride.id,
@@ -97,7 +97,7 @@ class _RidePageState extends State<RidePage> {
           if(widget.ride.userP2Id == 0) {
             if(r == 2 || r == 3 || r == 4) {
               if(widget.ride.userP1Id != widget.users.id){
-                await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+                await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
                   headers: {"Content-Type": "application/json"},
                   body: jsonEncode(<String, dynamic>{
                     "id": widget.ride.id,
@@ -133,7 +133,7 @@ class _RidePageState extends State<RidePage> {
             if(widget.ride.userP3Id == 0) {
               if(r == 3 || r == 4) {
                 if(widget.ride.userP2Id != widget.users.id && widget.ride.userP1Id != widget.users.id) {
-                  await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+                  await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
                     headers: {"Content-Type": "application/json"},
                     body: jsonEncode(<String, dynamic>{
                       "id": widget.ride.id,
@@ -169,7 +169,7 @@ class _RidePageState extends State<RidePage> {
               if(widget.ride.userP4Id == 0) {
                 if(r == 4) {
                   if(widget.ride.userP3Id != widget.users.id && widget.ride.userP2Id != widget.users.id && widget.ride.userP1Id != widget.users.id) {
-                    await http.put(Uri.parse("http://192.168.1.40:3000/rides/$id"),
+                    await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
                       headers: {"Content-Type": "application/json"},
                       body: jsonEncode(<String, dynamic>{
                         "id": widget.ride.id,
