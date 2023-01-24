@@ -16,6 +16,7 @@ class SignUpPage extends StatefulWidget {
   final List<Ride> _rides = [];
   final List<Ride> _ridesU = [];
   final List<Ride> _ridesP = [];
+  final List<Users> _usersCount = [];
 
   @override
   SignUpPageState createState() => SignUpPageState();
@@ -31,55 +32,63 @@ class SignUpPageState extends State<SignUpPage> {
   late Users newUser;
 
   postUser() async {
-    newUser = Users(
-      id: 8,
-      name: _controllerName.text,
-      dateOfBirth: _controllerBirth.text,
-      email: _controllerEmail.text,
-      icon: "https://cdn.icon-icons.com/icons2/67/PNG/512/user_13230.png",
-      password: _controllerPassword.text
-    );
-    final response = await http.post(Uri.parse("http://192.168.1.40:3000/users"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "id": newUser.id,
-        "name": newUser.name,
-        "dateOfBirth": newUser.dateOfBirth,
-        "email": newUser.email,
-        "icon": newUser.icon,
-        "password": newUser.password,
-      })
-    );
-    if (response.statusCode == 201) {
-      widget._rides.clear();
-      widget._ridesU.clear();
-      widget._ridesP.clear();
-      final response = await http.get(Uri.parse("http://192.168.1.40:3000/rides"));
+    final res = await http.get(Uri.parse("http://192.168.0.109:3000/users"));
+    if(res.statusCode == 200) {
+      List<dynamic> myUsers = json.decode(utf8.decode(res.bodyBytes));
+      List<Users> users = myUsers.map((e) => Users.fromJson(e)).toList();
+      setState(() {
+        widget._usersCount.addAll(users);
+      });
+      newUser = Users(
+        id: widget._usersCount.length + 1,
+        name: _controllerName.text,
+        dateOfBirth: _controllerBirth.text,
+        email: _controllerEmail.text,
+        icon: "https://cdn.icon-icons.com/icons2/67/PNG/512/user_13230.png",
+        password: _controllerPassword.text
+      );
+      final response = await http.post(Uri.parse("http://192.168.0.109:3000/users"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(<String, dynamic>{
+          "id": newUser.id,
+          "name": newUser.name,
+          "dateOfBirth": newUser.dateOfBirth,
+          "email": newUser.email,
+          "icon": newUser.icon,
+          "password": newUser.password,
+        })
+      );
+      if (response.statusCode == 201) {
+        widget._rides.clear();
+        widget._ridesU.clear();
+        widget._ridesP.clear();
+        final response = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
 
-      if (response.statusCode == 200) {
-        List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
-        List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
-        setState(() {
-          widget._rides.addAll(rides.where((element) => element.state == false && newUser.id != element.userId));
-          widget._ridesU.addAll(rides.where((element) => newUser.id == element.userId));
-          widget._ridesP.addAll(rides.where((element) => element.userP1Id == newUser.id || element.userP2Id == newUser.id || element.userP3Id == newUser.id || element.userP4Id == newUser.id));
-        });
-        Navigator.of(context).push(
-          PageTransition(
-            child: MainPage(id: newUser.id, users: newUser, ridesA: widget._rides, ridesU: widget._ridesU, ridesP: widget._ridesP),
-            type: PageTransitionType.fade,
-          ),
-        );
-        final successSnack = SnackBar(
-          content: Text("Usuario creado con éxito"),
-          action: SnackBarAction(
-            label: "Cerrar",
-            onPressed: () {
-              Navigator.of(context);
-            },
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(successSnack);
+        if (response.statusCode == 200) {
+          List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
+          List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
+          setState(() {
+            widget._rides.addAll(rides.where((element) => element.state == false && newUser.id != element.userId));
+            widget._ridesU.addAll(rides.where((element) => newUser.id == element.userId));
+            widget._ridesP.addAll(rides.where((element) => element.userP1Id == newUser.id || element.userP2Id == newUser.id || element.userP3Id == newUser.id || element.userP4Id == newUser.id));
+          });
+          Navigator.of(context).push(
+            PageTransition(
+              child: MainPage(id: newUser.id, users: newUser, ridesA: widget._rides, ridesU: widget._ridesU, ridesP: widget._ridesP),
+              type: PageTransitionType.fade,
+            ),
+          );
+          final successSnack = SnackBar(
+            content: Text("Usuario creado con éxito"),
+            action: SnackBarAction(
+              label: "Cerrar",
+              onPressed: () {
+                Navigator.of(context);
+              },
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(successSnack);
+        }
       }
     }
   }
@@ -124,7 +133,7 @@ class SignUpPageState extends State<SignUpPage> {
                             ),
                             keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.next,
-                            validator: ValidationBuilder().build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor ingrese el nombre").build(),
                           ),
                         ),
                         SizedBox(height: 12),
@@ -146,7 +155,7 @@ class SignUpPageState extends State<SignUpPage> {
                             ),
                             keyboardType: TextInputType.datetime,
                             textInputAction: TextInputAction.next,
-                            validator: ValidationBuilder().regExp(RegExp(r"^([0-9]|[1-2][0-9]|(3)[0-1])(\/)(([0-9])|((1)[0-2]))(\/)\d{4}"), "Ingrese una fecha válida").build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor ingrese la fecha de nacimiento").regExp(RegExp(r"^([0-9]|[1-2][0-9]|(3)[0-1])(\/)(([0-9])|((1)[0-2]))(\/)\d{4}"), "Ingrese una fecha válida").build(),
                           ),
                         ),
                         SizedBox(height: 12),
@@ -163,7 +172,7 @@ class SignUpPageState extends State<SignUpPage> {
                             ),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
-                            validator: ValidationBuilder().email().build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor ingrese el correo").email().build(),
                             onChanged: (value) {
                               setState(() {
                                 email = _controllerEmail.text;
@@ -185,7 +194,7 @@ class SignUpPageState extends State<SignUpPage> {
                             ),
                             obscureText: true,
                             textInputAction: TextInputAction.next,
-                            validator: ValidationBuilder().build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor ingrese la contraseña").build(),
                           ),
                         ),
                         SizedBox(height: 12),
@@ -193,7 +202,7 @@ class SignUpPageState extends State<SignUpPage> {
                           padding: EdgeInsets.only(left: 35, right: 35),
                           child: TextFormField(
                             textInputAction: TextInputAction.done,
-                            validator: ValidationBuilder().build(),
+                            validator: ValidationBuilder(requiredMessage: "Por favor confirme la contraseña").build(),
                             controller: _controllerPasswordConf,
                             obscureText: true,
                             decoration: const InputDecoration(
@@ -242,7 +251,7 @@ class SignUpPageState extends State<SignUpPage> {
                                   ),
                                   onPressed: () async {
                                     if (_keyForm.currentState!.validate()) {
-                                      final response = await http.get(Uri.parse("http://192.168.1.40:3000/users?email=$email"));
+                                      final response = await http.get(Uri.parse("http://192.168.0.109:3000/users?email=$email"));
                                       if (response.statusCode == 200) {
                                         List<dynamic> myUser = json.decode(response.body);
                                         List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
