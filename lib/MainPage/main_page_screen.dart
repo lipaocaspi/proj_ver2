@@ -15,6 +15,7 @@ import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/SettingsPage/settings_page_screen.dart';
 import 'package:proj_ver1/UserRidesPage/user_rides_page_screen.dart';
 
+// ignore: must_be_immutable
 class MainPage extends StatefulWidget {
   MainPage({Key? key, required this.id, required this.users, required this.ridesA, required this.ridesU, required this.ridesP}) : super(key: key);
   final Users users;
@@ -52,7 +53,7 @@ class MainPageState extends State<MainPage> {
     widget.ridesA.clear();
     widget.ridesU.clear();
     widget.ridesP.clear();
-    final response = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.1.35:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -78,7 +79,7 @@ class MainPageState extends State<MainPage> {
   loadFilter() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -92,7 +93,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserDate() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -106,7 +107,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserCar() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -120,7 +121,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserMoto() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -134,7 +135,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherDate() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -148,7 +149,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherCar() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -162,7 +163,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherMoto() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.0.109:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
