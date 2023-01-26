@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:proj_ver1/variables.dart';
 import 'package:proj_ver1/constants.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/LoginPage/login_page_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/SettingsPage/components/help_page.dart';
@@ -9,10 +11,124 @@ import 'package:proj_ver1/SettingsPage/components/terms_page.dart';
 import 'package:proj_ver1/SettingsPage/components/privacy_page.dart';
 import 'package:proj_ver1/SettingsPage/components/security_page.dart';
 
-class SettingsPage extends StatelessWidget {
+// ignore: must_be_immutable
+class SettingsPage extends StatefulWidget {
   SettingsPage(this.users, this._ridesU, {Key? key}) : super(key: key);
   final Users users;
   List<Ride> _ridesU = [];
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+
+  checkPermissions() async {
+    PermissionStatus resultLoc;
+    PermissionStatus resultCam;
+    PermissionStatus resultSto;
+    resultLoc = await Permission.location.status;
+    resultCam = await Permission.camera.status;
+    resultSto = await Permission.storage.status;
+    if(resultLoc.isGranted) {
+      setState(() {
+        isSwitchOnLoc = true;
+      });
+    }
+    if(resultCam.isGranted) {
+      setState(() {
+        isSwitchOnCam = true;
+      });
+    }
+    if(resultSto.isGranted) {
+      setState(() {
+        isSwitchOnSto = true;
+      });
+    }
+    return ;
+  }
+
+  showAbout() {
+    return showModalBottomSheet(
+      context: context,
+      shape: borderRad,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(25),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Acerca de UIS Wheels",
+                style: TextStyle(fontSize: 20),
+              ),
+              doublespace,
+              Image.asset("assets/images/llanta.png", height: 70),
+              doublespace,
+              Text("UIS Wheels V1",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15)
+              )
+            ]
+          )
+        );
+      }
+    );
+  }
+
+  logOut() {
+    return showModalBottomSheet(
+      context: context,
+      shape: borderRad,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(25),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "¿Desea cerrar sesión?",
+                style: TextStyle(fontSize: 20),
+              ),
+              doublespace,
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 8, right: 8),
+                      child: ElevatedButton(
+                        child: Text("CANCELAR"),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 8, right: 8),
+                      child: ElevatedButton(
+                        child: Text("CERRAR SESIÓN"),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            PageTransition(
+                              child: LoginPage(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                      )
+                    ),
+                  )
+                ],
+              ),
+            ],
+          )
+        );
+      }
+    );
+  }
 
   static final bdecoration = BoxDecoration(
     gradient: LinearGradient(
@@ -33,6 +149,13 @@ class SettingsPage extends StatelessWidget {
         spreadRadius: 2,
       )
     ],
+  );
+
+  static final borderRad = RoundedRectangleBorder(
+    borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(15),
+      topRight: Radius.circular(15)
+    )
   );
 
   @override
@@ -60,9 +183,10 @@ class SettingsPage extends StatelessWidget {
                           padding: EdgeInsets.all(15),
                           child: InkWell(
                             onTap: () {
+                              checkPermissions();
                               Navigator.of(context).push(
                                 PageTransition(
-                                  child: PrivacyPage(users, _ridesU),
+                                  child: PrivacyPage(widget.users, widget._ridesU),
                                   type: PageTransitionType.fade,
                                 ),
                               );
@@ -200,37 +324,7 @@ class SettingsPage extends StatelessWidget {
                               ],
                             ),
                             onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(15),
-                                    topRight: Radius.circular(15)
-                                  )
-                                ),
-                                builder: (context) {
-                                  return Padding(
-                                    padding: EdgeInsets.all(25),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Acerca de UIS Wheels",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        doublespace,
-                                        Image.asset("assets/images/llanta.png", height: 70),
-                                        doublespace,
-                                        Text(
-                                          "UIS Wheels V1",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(fontSize: 15)
-                                        )
-                                      ]
-                                    )
-                                  );
-                                }
-                              );
+                              showAbout();
                             },
                           ),
                         )
@@ -245,63 +339,7 @@ class SettingsPage extends StatelessWidget {
                       padding: EdgeInsets.all(10),
                       child: InkWell(
                         onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15)
-                              )
-                            ),
-                            builder: (context) {
-                              return Padding(
-                                padding: EdgeInsets.all(25),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "¿Desea cerrar sesión?",
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    doublespace,
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(left: 8, right: 8),
-                                            child: ElevatedButton(
-                                              child: Text("CANCELAR"),
-                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                            )
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.only(left: 8, right: 8),
-                                            child: ElevatedButton(
-                                              child: Text("CERRAR SESIÓN"),
-                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                              onPressed: () {
-                                                Navigator.of(context).push(
-                                                  PageTransition(
-                                                    child: LoginPage(),
-                                                    type: PageTransitionType.fade,
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              );
-                            }
-                          );
+                          logOut();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
