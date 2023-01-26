@@ -31,8 +31,44 @@ class SignUpPageState extends State<SignUpPage> {
   final _keyForm = GlobalKey<FormState>();
   late Users newUser;
 
+  validate () async {
+    final response = await http.get(Uri.parse("http://192.168.1.35:3000/users?email=$email"));
+    if (response.statusCode == 200) {
+      List<dynamic> myUser = json.decode(response.body);
+      List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
+      if (user.isEmpty) {
+        if (_controllerPassword.text == _controllerPasswordConf.text) {
+          postUser();
+        } else {
+          final passSnack = SnackBar(
+            content: Text("Las contraseñas no coinciden"),
+            action: SnackBarAction(
+              label: "Cerrar",
+              onPressed: () {
+                Navigator.of(context);
+              },
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(passSnack);
+        }
+      } else {
+        final emailSnack = SnackBar(
+          content: Text("Este correo ya se encuentra registrado"),
+          action: SnackBarAction(
+            label: "Cerrar",
+            onPressed: () {
+              Navigator.of(context);
+            },
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(emailSnack);
+      }
+      return;
+    }
+  }
+
   postUser() async {
-    final res = await http.get(Uri.parse("http://192.168.0.109:3000/users"));
+    final res = await http.get(Uri.parse("http://192.168.1.35:3000/users"));
     if(res.statusCode == 200) {
       List<dynamic> myUsers = json.decode(utf8.decode(res.bodyBytes));
       List<Users> users = myUsers.map((e) => Users.fromJson(e)).toList();
@@ -47,7 +83,7 @@ class SignUpPageState extends State<SignUpPage> {
         icon: "https://cdn.icon-icons.com/icons2/67/PNG/512/user_13230.png",
         password: _controllerPassword.text
       );
-      final response = await http.post(Uri.parse("http://192.168.0.109:3000/users"),
+      final response = await http.post(Uri.parse("http://192.168.1.35:3000/users"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(<String, dynamic>{
           "id": newUser.id,
@@ -62,7 +98,7 @@ class SignUpPageState extends State<SignUpPage> {
         widget._rides.clear();
         widget._ridesU.clear();
         widget._ridesP.clear();
-        final response = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
+        final response = await http.get(Uri.parse("http://192.168.1.35:3000/rides"));
 
         if (response.statusCode == 200) {
           List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -251,39 +287,7 @@ class SignUpPageState extends State<SignUpPage> {
                                   ),
                                   onPressed: () async {
                                     if (_keyForm.currentState!.validate()) {
-                                      final response = await http.get(Uri.parse("http://192.168.0.109:3000/users?email=$email"));
-                                      if (response.statusCode == 200) {
-                                        List<dynamic> myUser = json.decode(response.body);
-                                        List<Users> user = myUser.map((e) => Users.fromJson(e)).toList();
-                                        if (user.isEmpty) {
-                                          if (_controllerPassword.text == _controllerPasswordConf.text) {
-                                            postUser();
-                                          } else {
-                                            final passSnack = SnackBar(
-                                              content: Text("Las contraseñas no coinciden"),
-                                              action: SnackBarAction(
-                                                label: "Cerrar",
-                                                onPressed: () {
-                                                  Navigator.of(context);
-                                                },
-                                              ),
-                                            );
-                                            ScaffoldMessenger.of(context).showSnackBar(passSnack);
-                                          }
-                                        } else {
-                                          final emailSnack = SnackBar(
-                                            content: Text("Este correo ya se encuentra registrado"),
-                                            action: SnackBarAction(
-                                              label: "Cerrar",
-                                              onPressed: () {
-                                                Navigator.of(context);
-                                              },
-                                            ),
-                                          );
-                                          ScaffoldMessenger.of(context).showSnackBar(emailSnack);
-                                        }
-                                        return;
-                                      }
+                                      validate();
                                     }
                                   },
                                 ),
