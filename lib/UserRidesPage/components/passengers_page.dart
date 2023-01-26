@@ -7,6 +7,7 @@ import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/data/repository/models/messages_model.dart';
 import 'package:proj_ver1/UserRidesPage/components/selected_message_c.dart';
 
+// ignore: must_be_immutable
 class PassengersPage extends StatefulWidget {
   PassengersPage(this._users, {Key? key, required this.id, required this.ride}) : super(key: key);
   int id;
@@ -46,27 +47,46 @@ class PassengersPageState extends State<PassengersPage> {
     );
   }
 
+  showChat(index) async {
+    widget._message.clear();
+    final response = await http.get(Uri.parse("http://192.168.1.35:3000/messages"));
+
+    if (response.statusCode == 200) {
+      List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
+      List<Message> message = myMessages.map((e) => Message.fromJson(e)).toList();
+      setState(() {
+        widget._messageCount.addAll(message);
+        widget._message.addAll(message.where((element) => element.userIdOne == widget._users[index].id || element.userIdTwo == widget._users[index].id));
+      });
+      Navigator.of(context).push(
+        PageTransition(
+          child: MessagePageC(idU: widget.id, id: widget._users[index].id, users: widget._users[index], message: widget._message, message_count: widget._messageCount),
+          type: PageTransitionType.rightToLeft,
+        ),
+      );
+    }
+  }
+
   confirmDelete(index, i) {
-    return showDialog(
-      context: context, 
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "¿Desea eliminar al pasajero?",
-            style: TextStyle(fontSize: 20), 
-            textAlign: TextAlign.center
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text("CANCELAR"), 
-              onPressed: () {
-                Navigator.pop(context);
-              }
-            ),
-            TextButton(
-              child: Text("CONFIRMAR"), 
-              onPressed: () {
-                if(widget.ride.stateR == false) {
+    if(widget.ride.stateR == false) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("¿Desea eliminar al pasajero?",
+                    style: TextStyle(fontSize: 20), 
+                    textAlign: TextAlign.center
+                  ),
+            actions: <Widget> [
+              TextButton(
+                child: Text("CANCELAR", style: TextStyle(color: Colors.black)), 
+                onPressed: () {
+                  Navigator.pop(context);
+                }
+              ),
+              TextButton(
+                child: Text("CONFIRMAR", style: TextStyle(color: Colors.black)),
+                onPressed: () {
                   if(i == widget.ride.userP1Id) {
                     deletePassenger1(widget.ride.id);
                     Navigator.pop(context);
@@ -86,41 +106,41 @@ class PassengersPageState extends State<PassengersPage> {
                   setState(() {
                     widget._users.removeAt(index);
                   });
-                } else {
-                  if(widget.ride.stateR == true && widget.ride.state == true) {
-                    final endSnack = SnackBar(
-                      content: Text("Viaje finalizado. No se puede eliminar"),
-                      action: SnackBarAction(
-                        label: "Cerrar",
-                        onPressed: () {
-                          Navigator.of(context);
-                        },
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(endSnack);
-                  } else {
-                    final onSnack = SnackBar(
-                      content: Text("El viaje está en curso"),
-                      action: SnackBarAction(
-                        label: "Cerrar",
-                        onPressed: () {
-                          Navigator.of(context);
-                        },
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(onSnack);
-                  }
-                }
-              }
+                }, 
+              )
+            ]
+          );
+        }
+      );
+    } else {
+      if(widget.ride.stateR == true && widget.ride.state == true) {
+        final endSnack = SnackBar(
+          content: Text("Viaje finalizado. No se puede eliminar"),
+          action: SnackBarAction(
+            label: "Cerrar",
+              onPressed: () {
+                Navigator.of(context);
+              },
             ),
-          ],
         );
+        ScaffoldMessenger.of(context).showSnackBar(endSnack);
+      } else {
+        final onSnack = SnackBar(
+          content: Text("El viaje está en curso"),
+          action: SnackBarAction(
+            label: "Cerrar",
+            onPressed: () {
+              Navigator.of(context);
+            },
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(onSnack);
       }
-    );
+    }
   }
 
   deletePassenger1(id) async {
-    await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -148,7 +168,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger2(id) async {
-    await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -176,7 +196,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger3(id) async {
-    await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -204,7 +224,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger4(id) async {
-    await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -280,23 +300,7 @@ class PassengersPageState extends State<PassengersPage> {
                                   IconButton(
                                     icon: Icon(Icons.message),
                                     onPressed: () async {
-                                      widget._message.clear();
-                                      final response = await http.get(Uri.parse("http://192.168.0.109:3000/messages"));
-
-                                      if (response.statusCode == 200) {
-                                        List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
-                                        List<Message> message = myMessages.map((e) => Message.fromJson(e)).toList();
-                                        setState(() {
-                                          widget._messageCount.addAll(message);
-                                          widget._message.addAll(message.where((element) => element.userIdOne == widget._users[index].id || element.userIdTwo == widget._users[index].id));
-                                        });
-                                        Navigator.of(context).push(
-                                          PageTransition(
-                                            child: MessagePageC(idU: widget.id, id: widget._users[index].id, users: widget._users[index], message: widget._message, message_count: widget._messageCount),
-                                            type: PageTransitionType.rightToLeft,
-                                          ),
-                                        );
-                                      }
+                                      await showChat(index);
                                     }, 
                                   ),
                                   IconButton(
