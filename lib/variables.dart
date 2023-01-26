@@ -22,6 +22,7 @@ String price = '';
 String searchStart = '';
 String searchEnd = '';
 String searchDate = '';
+bool isOn = false;
 bool isSwitchOnLoc = false;
 bool isSwitchOnCam = false;
 bool isSwitchOnSto = false;
