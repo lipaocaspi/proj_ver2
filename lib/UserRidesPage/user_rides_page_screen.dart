@@ -7,7 +7,9 @@ import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/UserRidesPage/components/edit_ride.dart';
 import 'package:proj_ver1/UserRidesPage/components/ride_page_c.dart';
 import 'package:proj_ver1/UserRidesPage/components/ride_page_p.dart';
+import 'package:proj_ver1/variables.dart';
 
+// ignore: must_be_immutable
 class UserRidesPage extends StatefulWidget {
   UserRidesPage(this.id, this._ridesU, this._ridesP, this.users, {Key? key}) : super(key: key);
   int id;
@@ -24,7 +26,7 @@ class UserRidesPageState extends State<UserRidesPage> {
   reloadRides() async {
     widget._ridesU.clear();
     widget._ridesP.clear();
-    final response = await http.get(Uri.parse("http://192.168.0.109:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.1.35:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -46,6 +48,42 @@ class UserRidesPageState extends State<UserRidesPage> {
     }
   }
 
+  editRide(index) {
+    if(widget._ridesU[index].state == true && widget._ridesU[index].stateR == true) {
+      final errorEditSnack = SnackBar(
+        content: Text("Viaje finalizado. No se puede editar"),
+        action: SnackBarAction(
+          label: "Cerrar",
+          onPressed: () {
+            Navigator.of(context);
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(errorEditSnack);
+    }
+    else {
+      if (widget._ridesU[index].state == false && widget._ridesU[index].stateR == true) {
+        final errorEdSnack = SnackBar(
+          content: Text("Viaje en curso. No se puede editar"),
+          action: SnackBarAction(
+            label: "Cerrar",
+            onPressed: () {
+              Navigator.of(context);
+            },
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(errorEdSnack);
+      } else {
+        Navigator.of(context).push(
+          PageTransition(
+            child: EditRidePage(widget._ridesU[index], users: widget.users),
+            type: PageTransitionType.bottomToTop,
+          ),
+        );
+      }
+    }
+  }
+
   confirmDelete(index, id) {
     return showDialog(
       context: context, 
@@ -58,13 +96,13 @@ class UserRidesPageState extends State<UserRidesPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("CANCELAR"),
+              child: Text("CANCELAR", style: TextStyle(color: Colors.black)),
               onPressed: () {
                 Navigator.pop(context);
               }, 
             ),
             TextButton(
-              child: Text("CONFIRMAR"),
+              child: Text("CONFIRMAR", style: TextStyle(color: Colors.black)),
               onPressed: () {
                 deleteRide(index, id);
                 Navigator.pop(context);
@@ -77,7 +115,7 @@ class UserRidesPageState extends State<UserRidesPage> {
   }
 
   deleteRide(index, id) async {
-    final response = await http.delete(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    final response = await http.delete(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -196,6 +234,22 @@ class UserRidesPageState extends State<UserRidesPage> {
                                     subtitle: Text(widget._ridesU[index].dateAndTime),
                                     contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
                                     onTap: () {
+                                      if(widget._ridesU[index].stateR == false) {
+                                        setState(() {
+                                          isOn = false;
+                                        });
+                                      }
+                                      else {
+                                        if(widget._ridesU[index].state == true) {
+                                          setState(() {
+                                            isOn = false;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            isOn = true;
+                                          });
+                                        }
+                                      }
                                       Navigator.of(context).push(
                                         PageTransition(
                                           child: RidePageC(ride: widget._ridesU[index], id: widget.users.id, users: widget.users),
@@ -218,39 +272,7 @@ class UserRidesPageState extends State<UserRidesPage> {
                                       IconButton(
                                         icon: Icon(widget._ridesU[index].state == true && widget._ridesU[index].stateR == true ? null : Icons.edit),
                                         onPressed: (){
-                                          if(widget._ridesU[index].state == true && widget._ridesU[index].stateR == true) {
-                                            final errorEditSnack = SnackBar(
-                                              content: Text("Viaje finalizado. No se puede editar"),
-                                              action: SnackBarAction(
-                                                label: "Cerrar",
-                                                onPressed: () {
-                                                  Navigator.of(context);
-                                                },
-                                              ),
-                                            );
-                                            ScaffoldMessenger.of(context).showSnackBar(errorEditSnack);
-                                          }
-                                          else {
-                                            if (widget._ridesU[index].state == false && widget._ridesU[index].stateR == true) {
-                                              final errorEdSnack = SnackBar(
-                                                content: Text("Viaje en curso. No se puede editar"),
-                                                action: SnackBarAction(
-                                                  label: "Cerrar",
-                                                  onPressed: () {
-                                                    Navigator.of(context);
-                                                  },
-                                                ),
-                                              );
-                                              ScaffoldMessenger.of(context).showSnackBar(errorEdSnack);
-                                            } else {
-                                              Navigator.of(context).push(
-                                                PageTransition(
-                                                  child: EditRidePage(widget._ridesU[index], users: widget.users),
-                                                  type: PageTransitionType.bottomToTop,
-                                                ),
-                                              );
-                                            }
-                                          }
+                                          editRide(index);
                                         }, 
                                       ),
                                       IconButton(
