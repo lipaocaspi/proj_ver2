@@ -1,11 +1,13 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:proj_ver1/variables.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/UserRidesPage/components/passengers_page.dart';
+
 
 class RidePageC extends StatefulWidget {
   RidePageC({Key? key, required this.id, required this.ride, required this.users}) : super(key: key);
@@ -29,7 +31,7 @@ class _RidePageStateC extends State<RidePageC> {
 
   showPass() async {
     widget._usersP.clear();
-    final response = await http.get(Uri.parse("http://192.168.0.109:3000/users"));
+    final response = await http.get(Uri.parse("http://192.168.1.35:3000/users"));
 
     if (response.statusCode == 200) {
       List<dynamic> myUsers = json.decode(utf8.decode(response.bodyBytes));
@@ -71,7 +73,7 @@ class _RidePageStateC extends State<RidePageC> {
   }
 
   upStateR(id) async {
-    final res = await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    final res = await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -111,7 +113,7 @@ class _RidePageStateC extends State<RidePageC> {
   }
 
   upState(id) async {
-    final res = await http.put(Uri.parse("http://192.168.0.109:3000/rides/$id"),
+    final res = await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -150,6 +152,33 @@ class _RidePageStateC extends State<RidePageC> {
     }
   }
 
+  startRide() async {
+    if(widget.ride.state == false && widget.ride.stateR == true) {
+      await upState(widget.ride.id);
+      setState(() {
+        isOn =  false;
+      });
+    }
+    if (widget.ride.state == false && widget.ride.stateR == false) {
+      await upStateR(widget.ride.id);
+      setState(() {
+        isOn =  true;
+      });
+    }
+    if (widget.ride.state == true && widget.ride.stateR == true) {
+      final doneSnack = SnackBar(
+        content: Text("El viaje ya se ha realizado"),
+        action: SnackBarAction(
+          label: "Cerrar",
+          onPressed: () {
+            Navigator.of(context);
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(doneSnack);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -174,17 +203,9 @@ class _RidePageStateC extends State<RidePageC> {
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              widget.ride.state == true && widget.ride.stateR == true ? null : 
-              widget.ride.state == false && widget.ride.stateR == true ? Icons.stop : Icons.play_arrow
-            ),
+            icon: (isOn) ? Icon(Icons.stop) : Icon(Icons.play_arrow),
             onPressed: () async {
-              if(widget.ride.state == false && widget.ride.stateR == true) {
-                await upState(widget.ride.id);
-              }
-              if (widget.ride.state == false && widget.ride.stateR == false) {
-                await upStateR(widget.ride.id);
-              }
+              await startRide();
             }, 
           ),
           IconButton(
