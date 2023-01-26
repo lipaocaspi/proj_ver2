@@ -13,6 +13,7 @@ import 'package:proj_ver1/LoginPage/login_page_screen.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
 
+// ignore: must_be_immutable
 class PrivacyPage extends StatefulWidget {
   PrivacyPage(this.users, this._ridesU, {Key? key}) : super(key: key);
   final Users users;
@@ -85,7 +86,7 @@ class PrivacyPageState extends State<PrivacyPage> {
   }
 
   updateUserPassword(id) async {
-    final response = await http.put(Uri.parse("http://192.168.1.40:3000/users/$id"),
+    final response = await http.put(Uri.parse("http://192.168.1.35:3000/users/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.users.id,
@@ -113,7 +114,7 @@ class PrivacyPageState extends State<PrivacyPage> {
 
   deleteUser(id) async {
     final response = await http.delete(
-      Uri.parse("http://192.168.1.40:3000/users/$id"),
+      Uri.parse("http://192.168.1.35:3000/users/$id"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -129,7 +130,7 @@ class PrivacyPageState extends State<PrivacyPage> {
       if(widget._ridesU.isNotEmpty) {
         for(var i = 0; i == widget._ridesU.length; i++){
           id = widget._ridesU[i].id;
-          http.delete(Uri.parse("http://192.168.1.40:3000/rides/$id"));
+          http.delete(Uri.parse("http://192.168.1.35:3000/rides/$id"));
         }
         Navigator.of(context).push(
           PageTransition(
@@ -389,7 +390,7 @@ class PrivacyPageState extends State<PrivacyPage> {
                                     ),
                                     obscureText: true,
                                     textInputAction: TextInputAction.next,
-                                    validator: ValidationBuilder().build(),
+                                    validator: ValidationBuilder(requiredMessage: "Por favor ingrese la contraseña actual").build(),
                                     onChanged: (value) {
                                       setState(() {
                                         currentPass = value;
@@ -407,7 +408,7 @@ class PrivacyPageState extends State<PrivacyPage> {
                                     ),
                                     obscureText: true,
                                     textInputAction: TextInputAction.next,
-                                    validator: ValidationBuilder().build(),
+                                    validator: ValidationBuilder(requiredMessage: "Por favor ingrese la contraseña nueva").build(),
                                     onChanged: (value) {
                                       setState(() {
                                         newPass = value;
@@ -425,7 +426,7 @@ class PrivacyPageState extends State<PrivacyPage> {
                                     ),
                                     obscureText: true,
                                     textInputAction: TextInputAction.done,
-                                    validator: ValidationBuilder().build(),
+                                    validator: ValidationBuilder(requiredMessage: "Por favor confirme la contraseña").build(),
                                     onChanged: (value) {
                                       setState(() {
                                         confnewPass = value;
