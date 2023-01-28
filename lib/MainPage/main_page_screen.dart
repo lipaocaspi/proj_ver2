@@ -30,9 +30,8 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
-  final TextEditingController _controllerSearchStart = TextEditingController();
-  final TextEditingController _controllerSearchEnd = TextEditingController();
-  final TextEditingController _controllerSearchDate = TextEditingController();
+  final TextEditingController _controllerSearch = TextEditingController();
+  final search = ["Origen", "Destino", "Fecha y hora"];
   final formKey = GlobalKey<FormState>();
 
   final toast = FToast();
@@ -44,16 +43,17 @@ class MainPageState extends State<MainPage> {
   }
 
   clearSearch() {
-    _controllerSearchStart.clear();
-    _controllerSearchEnd.clear();
-    _controllerSearchDate.clear();
+    _controllerSearch.clear();
+    setState(() {
+      value1 = null;
+    });
   }
 
   loadRides() async {
     widget.ridesA.clear();
     widget.ridesU.clear();
     widget.ridesP.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.35:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.1.39:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -76,10 +76,38 @@ class MainPageState extends State<MainPage> {
     }
   }
 
-  loadFilter() async {
+  searchStart() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?start_like=$searchStart&end_like=$searchEnd&dateAndTime_like=$searchDate"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?start_like=$searching"));
+
+    if (response.statusCode == 200) {
+      List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
+      List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
+      setState(() {
+        widget.ridesA.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
+      });
+    }
+  }
+
+  searchEnd() async {
+    widget.ridesA.clear();
+    final response =
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?end_like=$searching"));
+
+    if (response.statusCode == 200) {
+      List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
+      List<Ride> rides = myRides.map((e) => Ride.fromJson(e)).toList();
+      setState(() {
+        widget.ridesA.addAll(rides.where((element) => element.state == false && widget.id != element.userId));
+      });
+    }
+  }
+
+  searchDate() async {
+    widget.ridesA.clear();
+    final response =
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?dateAndTime_like=$searching"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -93,7 +121,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserDate() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -107,7 +135,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserCar() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -121,7 +149,7 @@ class MainPageState extends State<MainPage> {
   loadFilterCloserMoto() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=asc"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=asc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -135,7 +163,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherDate() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -149,7 +177,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherCar() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?vehicle=Autom%C3%B3vil&_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -163,7 +191,7 @@ class MainPageState extends State<MainPage> {
   loadFilterFurtherMoto() async {
     widget.ridesA.clear();
     final response =
-        await http.get(Uri.parse("http://192.168.1.35:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=desc"));
+        await http.get(Uri.parse("http://192.168.1.39:3000/rides?vehicle=Motocicleta&_sort=dateAndTime&_order=desc"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -173,6 +201,15 @@ class MainPageState extends State<MainPage> {
       });
     }
   }
+
+  String? value1;
+  DropdownMenuItem<String> buildMenuVehicle(String search) => DropdownMenuItem(
+    value: search,
+    child: Text(
+      search,
+      style: const TextStyle(fontSize: 15),
+    ),
+  );
 
   static final tdecoration = BoxDecoration(
     borderRadius: BorderRadius.circular(25),
@@ -198,7 +235,7 @@ class MainPageState extends State<MainPage> {
           Icon(Icons.drive_eta, color: Colors.black87),
           space,
           Text(
-            'No se encontraron viajes',
+            ' No se encontraron viajes',
             style: TextStyle(color: Colors.black, fontSize: 15),
           ),
         ],
@@ -440,99 +477,68 @@ class MainPageState extends State<MainPage> {
           children: [
             Form(
               key: formKey,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10, top: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: TextFormField(
-                              controller: _controllerSearchStart,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(1),
-                                enabledBorder: borderdeco,
-                                hintText: "Origen",
-                                prefixIcon: Icon(Icons.room, color: Colors.black),
-                              ),
-                              textInputAction: TextInputAction.next,
-                              validator: ValidationBuilder(requiredMessage: "Por favor indique el origen").build(),
-                              onChanged: (value) {
-                                searchStart = _controllerSearchStart.text;
-                              },
-                            ),
-                          )
+              child: Padding(
+                padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.all(3),
+                        child: DropdownButtonFormField<String>(
+                          borderRadius: BorderRadius.circular(10),
+                          icon: const Icon(Icons.arrow_drop_down),
+                          iconSize: 20,
+                          items: search.map(buildMenuVehicle).toList(),
+                          value: value1,
+                          validator: (value) => value == null ? 'Elija un filtro' : null,
+                          onChanged: (value) => setState(() => value1 = value),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: TextFormField(
-                              controller: _controllerSearchEnd,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(5),
-                                enabledBorder: borderdeco,
-                                hintText: "Destino",
-                                prefixIcon: Icon(Icons.room, color: Colors.black),
-                              ),
-                              textInputAction: TextInputAction.next,
-                              validator: ValidationBuilder(requiredMessage: "Por favor indique el destino").build(),
-                              onChanged: (value) {
-                                searchEnd = _controllerSearchEnd.text;
-                              },
-                            ),
-                          )
-                        ),
-                      ],
-                    )
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: TextFormField(
-                              controller: _controllerSearchDate,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(5),
-                                enabledBorder: borderdeco,
-                                hintText: "Fecha y hora",
-                                prefixIcon: Icon(Icons.calendar_month, color: Colors.black),
-                              ),
-                              textInputAction: TextInputAction.done,
-                              validator: ValidationBuilder(requiredMessage: "Por favor indique la fecha y/o hora").build(),
-                              onChanged: (value) {
-                                searchDate = _controllerSearchDate.text;
-                              }
-                            ),
-                          )
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: ElevatedButton(
-                              child: Icon(Icons.search),
-                              onPressed: () async {
-                                if (formKey.currentState!.validate()) {
-                                  await loadFilter();
+                      )
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.all(3),
+                        child: TextFormField(
+                          controller: _controllerSearch,
+                          decoration: InputDecoration(hintText: "Buscar"),
+                          validator: ValidationBuilder(requiredMessage: "Por favor rellene el campo").build(),
+                          onChanged: (value) {
+                            setState(() {
+                              searching = _controllerSearch.text;
+                            });
+                          },
+                          onFieldSubmitted: (value) async {
+                            if (formKey.currentState!.validate()) {
+                              if(value1 == 'Origen') {
+                                await searchStart();
+                                if(widget.ridesA.isEmpty){
+                                  showRidesToast();
+                                }
+                              } else {
+                                if(value1 == 'Destino') {
+                                  await searchEnd();
                                   if(widget.ridesA.isEmpty){
                                     showRidesToast();
                                   }
-                                  clearSearch();
+                                } else {
+                                  if(value1 == 'Fecha y hora') {
+                                    await searchDate();
+                                    if(widget.ridesA.isEmpty){
+                                      showRidesToast();
+                                    }
+                                  }
                                 }
                               }
-                            )
-                          )
+                            }
+                          },
                         ),
-                      ],
+                      )
                     ),
-                  ),
-                ],
-              )
+                  ],
+                ),
+              ),
             ),
             Expanded(
               child: ListView(
@@ -543,7 +549,7 @@ class MainPageState extends State<MainPage> {
                       children: [
                         SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height *0.6,
+                          height: MediaQuery.of(context).size.height *0.7,
                           child: ListView.builder(
                             itemCount: widget.ridesA.length,
                             physics: ScrollPhysics(),

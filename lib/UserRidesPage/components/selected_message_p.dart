@@ -43,7 +43,7 @@ class MessagePageStateP extends State<MessagePageP> {
         text: _controllerMessage.text,
         idSent: widget.idU
       );
-      final res = await http.post(Uri.parse("http://192.168.1.35:3000/messages"),
+      final res = await http.post(Uri.parse("http://192.168.1.39:3000/messages"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(<String, dynamic>{
           "id": newMessage.id,
@@ -57,7 +57,7 @@ class MessagePageStateP extends State<MessagePageP> {
         _controllerMessage.clear();
         widget.message.clear();
         widget.message_count.clear();
-        final response = await http.get(Uri.parse("http://192.168.1.35:3000/messages"));
+        final response = await http.get(Uri.parse("http://192.168.1.39:3000/messages"));
 
         if (response.statusCode == 200) {
           List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));

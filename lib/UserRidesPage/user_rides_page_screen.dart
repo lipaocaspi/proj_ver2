@@ -26,7 +26,7 @@ class UserRidesPageState extends State<UserRidesPage> {
   reloadRides() async {
     widget._ridesU.clear();
     widget._ridesP.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.35:3000/rides"));
+    final response = await http.get(Uri.parse("http://192.168.1.39:3000/rides"));
 
     if (response.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(response.bodyBytes));
@@ -115,7 +115,7 @@ class UserRidesPageState extends State<UserRidesPage> {
   }
 
   deleteRide(index, id) async {
-    final response = await http.delete(Uri.parse("http://192.168.1.35:3000/rides/$id"),
+    final response = await http.delete(Uri.parse("http://192.168.1.39:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {

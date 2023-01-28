@@ -49,7 +49,7 @@ class PassengersPageState extends State<PassengersPage> {
 
   showChat(index) async {
     widget._message.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.35:3000/messages"));
+    final response = await http.get(Uri.parse("http://192.168.1.39:3000/messages"));
 
     if (response.statusCode == 200) {
       List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
@@ -140,7 +140,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger1(id) async {
-    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.39:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -168,7 +168,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger2(id) async {
-    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.39:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -196,7 +196,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger3(id) async {
-    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.39:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -224,7 +224,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger4(id) async {
-    await http.put(Uri.parse("http://192.168.1.35:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.39:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
