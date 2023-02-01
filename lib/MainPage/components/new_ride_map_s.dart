@@ -113,7 +113,7 @@ class NewRideMapSState extends State<NewRideMapS> {
               children: [
                 Expanded(
                   child: TextButton(
-                    child: Text("Eliminar marcador"),
+                    child: Text("Eliminar marcador", style: TextStyle(color: Colors.red)),
                     onPressed: () {
                       _removeMarker(selectedId!);
                       setState(() {
@@ -127,7 +127,7 @@ class NewRideMapSState extends State<NewRideMapS> {
                 ),
                 Expanded(
                   child: TextButton(
-                    child: Text("Guardar ubicación"),
+                    child: Text("Guardar ubicación", style: TextStyle(color: Colors.black)),
                     onPressed: () {
                       if(markers.isEmpty) {
                         final errorSnack = SnackBar(

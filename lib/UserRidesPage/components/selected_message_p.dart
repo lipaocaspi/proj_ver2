@@ -6,8 +6,8 @@ import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/data/repository/models/messages_model.dart';
 
 // ignore: must_be_immutable
-class MessagePageP extends StatefulWidget {
-  MessagePageP({Key? key, required this.idU, required this.id, required this.users, required this.message, required this.message_count}) : super(key: key);
+class MessagePage extends StatefulWidget {
+  MessagePage({Key? key, required this.idU, required this.id, required this.users, required this.message, required this.message_count}) : super(key: key);
   int idU;
   int id;
   final Users users;
@@ -15,10 +15,10 @@ class MessagePageP extends StatefulWidget {
   List <Message> message_count = [];
 
   @override
-  State<MessagePageP> createState() => MessagePageStateP();
+  State<MessagePage> createState() => MessagePageState();
 }
 
-class MessagePageStateP extends State<MessagePageP> {
+class MessagePageState extends State<MessagePage> {
   final TextEditingController _controllerMessage = TextEditingController();
   late Message newMessage;
 
@@ -43,7 +43,7 @@ class MessagePageStateP extends State<MessagePageP> {
         text: _controllerMessage.text,
         idSent: widget.idU
       );
-      final res = await http.post(Uri.parse("http://192.168.1.39:3000/messages"),
+      final res = await http.post(Uri.parse("http://192.168.1.2:3000/messages"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(<String, dynamic>{
           "id": newMessage.id,
@@ -57,7 +57,7 @@ class MessagePageStateP extends State<MessagePageP> {
         _controllerMessage.clear();
         widget.message.clear();
         widget.message_count.clear();
-        final response = await http.get(Uri.parse("http://192.168.1.39:3000/messages"));
+        final response = await http.get(Uri.parse("http://192.168.1.2:3000/messages"));
 
         if (response.statusCode == 200) {
           List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
@@ -104,8 +104,8 @@ class MessagePageStateP extends State<MessagePageP> {
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
-              padding: EdgeInsets.only(left: 10,bottom: 10,top: 10),
-              height: 60,
+              padding: EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 10),
+              height: 80,
               width: double.infinity,
               color: Colors.white,
               child: Row(
@@ -120,12 +120,12 @@ class MessagePageStateP extends State<MessagePageP> {
                     ),
                   ),
                   space1,
-                  FloatingActionButton(
-                    child: Icon(Icons.send,color: Colors.white,size: 18,),
+                  FloatingActionButton.small(
+                    child: Icon(Icons.send, color: Colors.white, size: 18),
                     backgroundColor: Colors.green,
                     elevation: 0,
-                    onPressed: (){
-                      sendMessage();
+                    onPressed: () async {
+                      await sendMessage();
                     },
                   ),
                 ],

@@ -31,7 +31,7 @@ class _RidePageStateP extends State<RidePageP> {
   }
 
   showChat() async {
-    final response = await http.get(Uri.parse("http://192.168.1.39:3000/users"));
+    final response = await http.get(Uri.parse("http://192.168.1.2:3000/users"));
 
     if (response.statusCode == 200) {
       List<dynamic> myUsers = json.decode(utf8.decode(response.bodyBytes));
@@ -42,7 +42,8 @@ class _RidePageStateP extends State<RidePageP> {
       for(int i = 0; i <= (widget._usersC.length)-1; i++) {
         if(widget._usersC[i].id == widget.ride.userId) {
           widget._message.clear();
-          final response = await http.get(Uri.parse("http://192.168.1.39:3000/messages"));
+          widget._messageCount.clear();
+          final response = await http.get(Uri.parse("http://192.168.1.2:3000/messages"));
           if (response.statusCode == 200) {
             List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
             List<Message> message = myMessages.map((e) => Message.fromJson(e)).toList();
@@ -52,7 +53,7 @@ class _RidePageStateP extends State<RidePageP> {
             });
             Navigator.of(context).push(
               PageTransition(
-                child: MessagePageP(idU: widget.id, id: widget._usersC[i].id, users: widget._usersC[i], message: widget._message, message_count: widget._messageCount),
+                child: MessagePage(idU: widget.id, id: widget._usersC[i].id, users: widget._usersC[i], message: widget._message, message_count: widget._messageCount),
                 type: PageTransitionType.rightToLeft,
               ),
             );
