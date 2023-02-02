@@ -5,7 +5,7 @@ import 'package:proj_ver1/constants.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/data/repository/models/messages_model.dart';
 
-// FROM RIDE PAGE
+// FROM PASSENGERS PAGE
 
 // ignore: must_be_immutable
 class MessagePage extends StatefulWidget {
@@ -69,7 +69,8 @@ class MessagePageState extends State<MessagePage> {
           List<Message> messages = myMessages.map((e) => Message.fromJson(e)).toList();
           setState(() {
             widget.message_count.addAll(messages);
-            widget.message.addAll(messages.where((element) => element.rideId == widget.rideId && ((element.userIdOne == widget.id || element.userIdTwo == widget.id) && (element.userIdOne == widget.idU || element.userIdTwo == widget.idU))));
+            // widget.message.addAll(messages.where((element) => (element.userIdOne == widget.id || element.userIdTwo == widget.id && element.userIdOne == widget.idU || element.userIdTwo == widget.idU) && element.rideId == widget.rideId));
+            widget.message.addAll(messages.where((element) => (element.userIdOne == widget.id || element.userIdTwo == widget.id) && element.rideId == widget.rideId));
           });
         }
       }

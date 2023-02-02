@@ -17,7 +17,7 @@ class _UserPageState extends State<UserPage> {
   final _keyForm = GlobalKey<FormState>();
 
   updateUser(id) async {
-    http.put(Uri.parse("http://192.168.1.2:3000/users/$id"),
+    http.put(Uri.parse("http://192.168.1.41:3000/users/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.users.id,

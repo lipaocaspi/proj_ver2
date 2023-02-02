@@ -9,6 +9,7 @@ String messageToJson(List<Message> data) =>
 class Message {
   Message({
     required this.id,
+    required this.rideId,
     required this.userIdOne,
     required this.userIdTwo,
     required this.text,
@@ -16,6 +17,7 @@ class Message {
   });
 
   int id;
+  int rideId;
   int userIdOne;
   int userIdTwo;
   String text;
@@ -23,6 +25,7 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         id: json["id"],
+        rideId: json["rideId"],
         userIdOne: json["userIdOne"],
         userIdTwo: json["userIdTwo"],
         text: json["text"],
@@ -31,6 +34,7 @@ class Message {
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "rideId": rideId,
         "userIdOne": userIdOne,
         "userIdTwo": userIdTwo,
         "text": text,

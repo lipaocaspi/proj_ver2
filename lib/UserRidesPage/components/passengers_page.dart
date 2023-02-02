@@ -5,7 +5,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:proj_ver1/data/repository/models/ride_model.dart';
 import 'package:proj_ver1/data/repository/models/user_model.dart';
 import 'package:proj_ver1/data/repository/models/messages_model.dart';
-import 'package:proj_ver1/UserRidesPage/components/selected_message_p.dart';
+import 'package:proj_ver1/UserRidesPage/components/selected_message_c.dart';
 
 // ignore: must_be_immutable
 class PassengersPage extends StatefulWidget {
@@ -50,18 +50,18 @@ class PassengersPageState extends State<PassengersPage> {
   showChat(index) async {
     widget._message.clear();
     widget._messageCount.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.2:3000/messages"));
+    final response = await http.get(Uri.parse("http://192.168.1.41:3000/messages"));
 
     if (response.statusCode == 200) {
       List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
       List<Message> message = myMessages.map((e) => Message.fromJson(e)).toList();
       setState(() {
         widget._messageCount.addAll(message);
-        widget._message.addAll(message.where((element) => element.userIdOne == widget._users[index].id || element.userIdTwo == widget._users[index].id));
+        widget._message.addAll(message.where((element) => (element.userIdOne == widget._users[index].id || element.userIdTwo == widget._users[index].id) && element.rideId == widget.ride.id));
       });
       Navigator.of(context).push(
         PageTransition(
-          child: MessagePage(idU: widget.id, id: widget._users[index].id, users: widget._users[index], message: widget._message, message_count: widget._messageCount),
+          child: MessagePage(rideId: widget.ride.id, idU: widget.id, id: widget._users[index].id, users: widget._users[index], message: widget._message, message_count: widget._messageCount),
           type: PageTransitionType.rightToLeft,
         ),
       );
@@ -141,7 +141,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger1(id) async {
-    await http.put(Uri.parse("http://192.168.1.2:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.41:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -169,7 +169,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger2(id) async {
-    await http.put(Uri.parse("http://192.168.1.2:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.41:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -197,7 +197,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger3(id) async {
-    await http.put(Uri.parse("http://192.168.1.2:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.41:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -225,7 +225,7 @@ class PassengersPageState extends State<PassengersPage> {
   }
 
   deletePassenger4(id) async {
-    await http.put(Uri.parse("http://192.168.1.2:3000/rides/$id"),
+    await http.put(Uri.parse("http://192.168.1.41:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,

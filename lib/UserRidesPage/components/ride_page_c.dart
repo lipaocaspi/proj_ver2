@@ -31,7 +31,7 @@ class _RidePageStateC extends State<RidePageC> {
 
   showPass() async {
     widget._usersP.clear();
-    final response = await http.get(Uri.parse("http://192.168.1.2:3000/users"));
+    final response = await http.get(Uri.parse("http://192.168.1.41:3000/users"));
 
     if (response.statusCode == 200) {
       List<dynamic> myUsers = json.decode(utf8.decode(response.bodyBytes));
@@ -73,7 +73,7 @@ class _RidePageStateC extends State<RidePageC> {
   }
 
   upStateR(id) async {
-    final res = await http.put(Uri.parse("http://192.168.1.2:3000/rides/$id"),
+    final res = await http.put(Uri.parse("http://192.168.1.41:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,
@@ -113,7 +113,7 @@ class _RidePageStateC extends State<RidePageC> {
   }
 
   upState(id) async {
-    final res = await http.put(Uri.parse("http://192.168.1.2:3000/rides/$id"),
+    final res = await http.put(Uri.parse("http://192.168.1.41:3000/rides/$id"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(<String, dynamic>{
         "id": widget.ride.id,

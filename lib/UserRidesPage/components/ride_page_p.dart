@@ -31,7 +31,7 @@ class _RidePageStateP extends State<RidePageP> {
   }
 
   showChat() async {
-    final response = await http.get(Uri.parse("http://192.168.1.2:3000/users"));
+    final response = await http.get(Uri.parse("http://192.168.1.41:3000/users"));
 
     if (response.statusCode == 200) {
       List<dynamic> myUsers = json.decode(utf8.decode(response.bodyBytes));
@@ -43,17 +43,18 @@ class _RidePageStateP extends State<RidePageP> {
         if(widget._usersC[i].id == widget.ride.userId) {
           widget._message.clear();
           widget._messageCount.clear();
-          final response = await http.get(Uri.parse("http://192.168.1.2:3000/messages"));
+          final response = await http.get(Uri.parse("http://192.168.1.41:3000/messages"));
           if (response.statusCode == 200) {
             List<dynamic> myMessages = json.decode(utf8.decode(response.bodyBytes));
             List<Message> message = myMessages.map((e) => Message.fromJson(e)).toList();
             setState(() {
               widget._messageCount.addAll(message);
-              widget._message.addAll(message.where((element) => element.userIdOne == widget._usersC[i].id || element.userIdTwo == widget._usersC[i].id));
+              // widget._message.addAll(message.where((element) => (element.userIdOne == widget._usersC[i].id || element.userIdTwo == widget._usersC[i].id && element.userIdOne == widget.id || element.userIdTwo == widget.id) && element.rideId == widget.ride.id));
+              widget._message.addAll(message.where((element) => element.rideId == widget.ride.id && ((element.userIdOne == widget._usersC[i].id || element.userIdTwo == widget._usersC[i].id) && (element.userIdOne == widget.id || element.userIdTwo == widget.id))));
             });
             Navigator.of(context).push(
               PageTransition(
-                child: MessagePage(idU: widget.id, id: widget._usersC[i].id, users: widget._usersC[i], message: widget._message, message_count: widget._messageCount),
+                child: MessagePage(rideId: widget.ride.id, idU: widget.id, id: widget._usersC[i].id, users: widget._usersC[i], message: widget._message, message_count: widget._messageCount),
                 type: PageTransitionType.rightToLeft,
               ),
             );

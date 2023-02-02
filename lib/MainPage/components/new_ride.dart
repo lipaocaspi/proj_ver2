@@ -42,7 +42,7 @@ class NewRidePageState extends State<NewRidePage> {
   }
 
   postRide() async {
-    final res = await http.get(Uri.parse("http://192.168.1.2:3000/rides"));
+    final res = await http.get(Uri.parse("http://192.168.1.41:3000/rides"));
     if (res.statusCode == 200) {
       List<dynamic> myRides = json.decode(utf8.decode(res.bodyBytes));
       List<Ride> ride = myRides.map((e) => Ride.fromJson(e)).toList();
@@ -71,7 +71,7 @@ class NewRidePageState extends State<NewRidePage> {
         state: false,
         stateR: false,
       );
-      final response = await http.post(Uri.parse("http://192.168.1.2:3000/rides"),
+      final response = await http.post(Uri.parse("http://192.168.1.41:3000/rides"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(<String, dynamic>{
           "id": newRide.id,
