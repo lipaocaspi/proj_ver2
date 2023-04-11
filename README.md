@@ -1,5 +1,7 @@
 # Proyecto de Grado - Versión 2
 
-## Información
+- Diseño del componente Frontend de una aplicación móvil, desarrollado en [Flutter](https://docs.flutter.dev/get-started/codelab).
+- Backend prototipado haciendo uso de [json-server](https://github.com/typicode/json-server). Base de datos de prueba disponible en el siguiente [enlace](https://github.com/lipaocaspi/server_project).
 
-- [Flutter](https://docs.flutter.dev/get-started/codelab)
+### Autora
+Liliana Paola Castellanos Pinzón, estudiante de Ingeniería de Sistemas e Informática.
